@@ -1,0 +1,83 @@
+<div class="panel card row" id="adc-entrada">
+    <div class="card-dialog card-lg" role="document">
+        <div class="card-content">
+			<div class="card-header text-right p-4">
+				<h2 class="card-title pl-4 float-left pt-4 mt-4">Gerar Recibo</h2>
+				<h5 class="pl-4 ml-4 float-left pt-4 mt-4 text-success text-uppercase">{nome}</h5>
+                <a type="button" class="btn btn-warning mr-4" href="/{ret}/"> &nbsp;&lt;&nbsp; Página Principal</a>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<button type="button" class="m-4 btn btn-success submit btn-lg">Gerar Recibo</button>
+            </div>
+		    <div class="row p-4 card-body bg-secondary">
+				<span class="col-12 d-md-none d-block p-4 "><br></span>
+		        <div class="col-12 col-xs-12 col-sm-10 col-md-10 col-lg-10 col-xl-10 offset-0 offset-xs-0 offset-sm-1 offset-md-1 offset-lg-1 offset-xl-1 pl-1 pr-1 pt-1 pb-1 text-left">
+		            <div class="card">
+		                <div class="card-body">
+		                    <table id="tabela-principal" class="table table-bordered text-center" width="100%">
+		                         <thead><tr>{thead}</tr></thead>
+		                         <tbody>{tbody}</tbody>
+		                         <tfoot>
+									<tr><th colspan=4>OUTRAS OPÇÕES</th></tr>
+									<tr>
+										<td colspan=1>
+											<div class="row">
+												<div class="col-12 col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 offset-0 offset-xs-0 offset-sm-0 offset-md-0 offset-lg-0 offset-xl-0 pl-2 pr-2 pt-3 text-right"><b>DATA:</b></div>
+												<div class="col-12 col-xs-12 col-sm-12 col-md-8 col-lg-8 col-xl-8 offset-0 offset-xs-0 offset-sm-0 offset-md-0 offset-lg-0 offset-xl-0 text-left"><input id="data-recibo" type=date value="{data}" class="form-control is-valid" /></div>
+											</div>
+										</td>
+										<td colspan=3></td>
+										<!-- <td colspan=2>
+											<div class="row">
+												<div class="col-12 col-xs-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 offset-0 offset-xs-0 offset-sm-0 offset-md-0 offset-lg-0 offset-xl-0 pl-2 pr-2 pt-3 text-right"><b>DATA:</b></div>
+												<div class="col-12 col-xs-12 col-sm-12 col-md-8 col-lg-8 col-xl-8 offset-0 offset-xs-0 offset-sm-0 offset-md-0 offset-lg-0 offset-xl-0 text-left"><input type=date class="form-control is-valid" /></div>
+											</div>
+										</td> -->
+									</tr>
+								 </tfoot>
+		                     </table>
+		                </div>
+		            </div>
+		        </div>
+		    </div>
+			<!-- Contratos ? -->
+            <div class="card-footer text-right p-4">
+				<button type="button" class="m-4 btn btn-success submit btn-lg">Gerar Recibo</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script lwdk-addons>
+	LWDKExec(()=>{
+
+		$(".incluir_todos").change(function(){
+			$(".incluir_dado, .incluir_todos").prop("checked", $(this).is(":checked"));
+		});
+
+		$(".incluir_dado").change(function(){
+			$(".incluir_todos").prop("checked", false);
+		});
+
+		$(".submit").click(function(){
+			let imoveis = [], total = 0, perc;
+			if($(".incluir_dado:checked").length==0){
+				return swal.fire("", "Selecione algum dado para gerar recibo.", "error");
+			}
+			$(".incluir_dado:checked").each(function(){
+				imoveis.push($(this).data("imovel-id"));
+				total += parseInt($(this).data("comissao"));
+				perc = parseInt($(this).data("perc"));
+				nome = ($(this).data("nome"));
+			});
+
+			$.post("/relatorio_vendedor_imprimir/", {imvs: imoveis, comissao: total, qtd: $(".incluir_dado:checked").length, perc: perc, nome: nome, data: $("#data").val(), valor: $("#valor").val()}, function (data) {
+			    var w = window.open('about:blank');
+			    w.document.open();
+			    w.document.write(data);
+			    w.document.close();
+			});
+		});
+
+	});
+</script>

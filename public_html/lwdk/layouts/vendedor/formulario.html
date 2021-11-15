@@ -1,0 +1,175 @@
+<div class="panel card row" id="adc-entrada">
+    <div class="card-dialog card-lg" role="document">
+        <div class="card-content">
+			<div class="card-header text-right p-4">
+				<h2 class="card-title pl-4 float-left pt-4 mt-4">{titulo}</h2>
+                <a type="button" class="btn btn-warning mr-4" href="/vendedor/"> &nbsp;&lt;&nbsp; Página Principal</a>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<button type="button" class="m-4 btn btn-success submit btn-lg">{texto_botao} Dados</button>
+            </div>
+            <div class="card-body row add-form col-md-8 offset-md-2">
+                <div class="form-group col-12 mb-3 row p-0 m-0 category">
+					<div class="col-12 p-4 mb-3">
+						<h2>Dados do Vendedor</h2>
+					</div>
+                    <div class="col-lg-9 col-md-12 col-sm-12 p-4 mb-3">
+                        <label style="font-weight: bold; text-transform: uppercase;">nome do vendedor:</label>
+                        <div class="input-group">
+                            <input type="text" data-name="nome" class="form-control m-input ven" placeholder="" data-option="text" />
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 p-4 mb-3">
+                        <label style="font-weight: bold; text-transform: uppercase;">Data:</label>
+                        <div class="input-group">
+                            <input style="font-size: 12px;" readonly type="date" data-name="data" class="form-control m-input ven bg-white" placeholder="" value="{data}" data-option="text" />
+                        </div>
+                    </div>
+					<div class="col-lg-4 col-md-6 col-sm-12 p-4 mb-3">
+                        <label style="font-weight: bold; text-transform: uppercase;">CPF:</label>
+                        <div class="input-group">
+                            <input type="text" data-name="doc" class="form-control cpf m-input ven" placeholder="" data-option="text" />
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-12 p-4 mb-3">
+                        <label style="font-weight: bold; text-transform: uppercase;">RG:</label>
+                        <div class="input-group">
+                            <input type="text" data-name="rg" class="form-control m-input ven" placeholder="" data-option="text" />
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-12 p-4 mb-3">
+						<label style="font-weight: bold; text-transform: uppercase;">email:</label>
+                        <div class="input-group">
+                            <input type="text" data-name="email" class="form-control m-input ven" placeholder="" data-option="text" />
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-12 p-4 mb-3">
+                        <label style="font-weight: bold; text-transform: uppercase;">telefone 01:</label>
+                        <div class="input-group">
+                            <input type="text" data-name="tel1" class="form-control m-input ven tel" placeholder="" data-option="text" />
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-12 p-4 mb-3">
+                        <label style="font-weight: bold; text-transform: uppercase;">telefone 02:</label>
+                        <div class="input-group">
+                            <input type="text" data-name="tel2" class="form-control m-input ven tel" placeholder="" data-option="text" />
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-12 p-4 mb-3">
+						<label style="font-weight: bold; text-transform: uppercase;">comissão (%):</label>
+                        <div class="input-group">
+                            <input type="number" data-name="comissao" class="form-control m-input ven" placeholder="" data-option="text" />
+                        </div>
+                    </div>
+				</div><div class="form-group col-12 mb-3 row p-0 m-0 category">
+					<div class="col-12 p-4 mb-3">
+						<h2>Endereço do Vendedor</h2>
+					</div>
+					<div class="col-lg-3 col-md-6 col-sm-12 p-4 mb-3">
+						<label style="font-weight: bold; text-transform: uppercase;">cep:</label>
+                        <div class="input-group">
+							<input type="text" data-cep="" data-name="cep" class="form-control ven" placeholder="CEP" onkeyup="return endereco_cli.buscar_cep(this);" />
+						</div>
+					</div>
+					<div class="col-lg-7 col-md-6 col-sm-12 p-4 mb-3">
+						<label style="font-weight: bold; text-transform: uppercase">Endereço</label>
+                        <div class="input-group">
+							<input type="text"  data-name="rua" class="form-control ven" placeholder="" />
+						</div>
+					</div>
+					<div class="col-lg-2 col-md-6 col-sm-12 p-4 mb-3">
+						<label style="font-weight: bold; text-transform: uppercase;">Numero</label>
+                        <div class="input-group">
+							<input type="text"  data-name="numero" class="form-control ven" placeholder="" />
+						</div>
+					</div>
+					<div class="col-lg-3 col-md-6 col-sm-12 p-4 mb-3">
+						<label style="font-weight: bold; text-transform: uppercase;">Complemento</label>
+                        <div class="input-group">
+							<input type="text"  data-name="complemento" class="form-control ven" placeholder="Complemento" />
+						</div>
+					</div>
+					<div class="col-lg-3 col-md-6 col-sm-12 p-4 mb-3">
+						<label style="font-weight: bold; text-transform: uppercase;">Bairro</label>
+                        <div class="input-group">
+							<input type="text"  data-name="bairro" class="form-control ven" placeholder="" />
+						</div>
+					</div>
+					<div class="col-lg-3 col-md-6 col-sm-12 p-4 mb-3">
+						<label style="font-weight: bold; text-transform: uppercase;">Cidade</label>
+                        <div class="input-group">
+							<input type="text"  data-name="cidade" class="form-control ven" placeholder="" />
+						</div>
+					</div>
+					<div class="col-lg-3 col-md-6 col-sm-12 p-4 mb-3">
+						<label style="font-weight: bold; text-transform: uppercase;">Estado</label>
+                        <div class="input-group">
+							<input type="text"  data-name="estado" class="form-control ven" placeholder="" />
+						</div>
+					</div>
+                </div>
+            </div>
+			<!-- Contratos ? -->
+            <div class="card-footer text-right p-4">
+				<button type="button" class="m-4 btn btn-success submit btn-lg">{texto_botao} Dados</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script lwdk-addons src="/js/ven/venform.js" lwdk-vars="on"></script>
+
+<script lwdk-addons>
+	if(typeof endereco_cli === "undefined"){
+		const endereco_cli = window.endereco_cli = new Object();
+	}
+
+	LWDKExec(()=>{
+		endereco_cli.buscar_cep = (function(obj){
+			cep = obj.value.split(/[^0-9]/).join('');
+
+			if(cep.length > 8){
+				$(obj).addClass("is-invalid");
+
+				$(obj).closest(".campos_ends").find('[data-name="rua"]').val('');
+				$(obj).closest(".campos_ends").find('[data-name="bairro"]').val('');
+				$(obj).closest(".campos_ends").find('[data-name="complemento"]').val('');
+				$(obj).closest(".campos_ends").find('[data-name="cidade"]').val('');
+				$(obj).closest(".campos_ends").find('[data-name="estado"]').val('');
+				$(obj).closest(".campos_ends").find('[data-name="numero"]').val('');
+			} else if(cep.length == 8){
+				swal.fire({
+					title: '',
+					text: 'Buscando cep, aguarde...',
+					showCancelButton: false,
+					showConfirmButton: false
+				});
+
+				$.get(`//viacep.com.br/ws/${cep}/json/`, function(data){
+					if(typeof data.erro == "boolean" && data.erro){
+						$(obj).addClass("is-invalid");
+						$(obj).closest(".campos_ends").find('[data-name="rua"]').val('');
+						$(obj).closest(".campos_ends").find('[data-name="bairro"]').val('');
+						$(obj).closest(".campos_ends").find('[data-name="complemento"]').val('');
+						$(obj).closest(".campos_ends").find('[data-name="cidade"]').val('');
+						$(obj).closest(".campos_ends").find('[data-name="estado"]').val('');
+						$(obj).closest(".campos_ends").find('[data-name="numero"]').val('');
+						swal.fire("","Cep incorreto.","error");
+					} else {
+						$(obj).removeClass("is-invalid");
+						$(obj).val(data.cep);
+						$(obj).closest(".campos_ends").find('[data-name="rua"]').val(data.logradouro);
+						$(obj).closest(".campos_ends").find('[data-name="bairro"]').val(data.bairro);
+						$(obj).closest(".campos_ends").find('[data-name="complemento"]').val(data.complemento);
+						$(obj).closest(".campos_ends").find('[data-name="cidade"]').val(data.localidade.toUpperCase());
+						$(obj).closest(".campos_ends").find('[data-name="estado"]').val(data.uf.toUpperCase());
+						$(obj).closest(".campos_ends").find('[data-name="numero"]');
+						swal.close();
+					}
+				});
+			} else {
+				$(obj).removeClass("is-invalid");
+			}
+			return true;
+		});
+	});
+</script>

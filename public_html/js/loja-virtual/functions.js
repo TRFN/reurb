@@ -253,7 +253,7 @@ const Go = window.Go = ((url) => {
 
 LWDKInitFunction.addFN(()=>$("select.m_selectpicker").each(function(){$('.js-dropdn-close').each(function(){this.click();}); return((s=One(this,"data__live__search")).length>0?s:{selectpicker:()=>{}}).selectpicker({liveSearch: true})}));
 
-setInterval(()=>One(".dropdown-menu li:not(.disabled)", "verify__empty").each(function(){if(this.innerText==""){ $(this).remove(); } }),150);
+setInterval(()=>One(".dropdown-menu li:not(.disabled)", "verify__empty").each(function(){if(this.innerText==""){ $(this).hide(); } }),150);
 
 const LU = window.LU = function LU(id,percent=0){
     $(id).css("width",(String(str=((percent)*100))+"%")).text(String(~~str)+"%");

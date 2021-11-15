@@ -1,0 +1,85 @@
+<div class="card-body row add-form">
+	<div class="col-12 p-4 mb-3">
+		<h2>Dados do Vendedor</h2>
+	</div>
+	<div class="form-group col-12 mb-3 row p-0 m-0 campos_ends">
+		<div class="col-lg-9 col-md-12 col-sm-12 p-4 mb-3">
+			<label style="font-weight: bold; text-transform: uppercase;">nome do vendedor:</label>
+			<div class="input-group">
+				<input type="text" data-name="nome" class="form-control m-input ven-popup" placeholder="" data-option="text" />
+			</div>
+		</div>
+		<div class="col-lg-3 col-md-6 col-sm-12 p-4 mb-3">
+			<label style="font-weight: bold; text-transform: uppercase;">Data:</label>
+			<div class="input-group">
+				<input style="font-size: 12px;" readonly type="date" data-name="data" class="form-control m-input ven-popup data" placeholder="" value="{data}" data-option="text" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 p-4 mb-3">
+			<label style="font-weight: bold; text-transform: uppercase;">telefone 01:</label>
+			<div class="input-group">
+				<input type="text" data-name="tel1" class="form-control m-input ven-popup tel" placeholder="" data-option="text" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 p-4 mb-3">
+			<label style="font-weight: bold; text-transform: uppercase;">telefone 02:</label>
+			<div class="input-group">
+				<input type="text" data-name="tel2" class="form-control m-input ven-popup tel" placeholder="" data-option="text" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 p-4 mb-3">
+			<label style="font-weight: bold; text-transform: uppercase;">telefone 03:</label>
+			<div class="input-group">
+				<input type="text" data-name="tel3" class="form-control m-input ven-popup tel" placeholder="" data-option="text" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 p-4 mb-3">
+			<label style="font-weight: bold; text-transform: uppercase;">email:</label>
+			<div class="input-group">
+				<input type="text" data-name="email" class="form-control m-input ven-popup" placeholder="" data-option="text" />
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6 col-sm-12 p-4 mb-3">
+			<label style="font-weight: bold; text-transform: uppercase;">comissão (%):</label>
+			<div class="input-group">
+				<input type="number" data-name="comissao" class="form-control m-input ven-popup" placeholder="" data-option="text" />
+			</div>
+		</div>
+	</div>
+</div>
+
+<script lwdk-vars="on" lwdk-addons>
+	LWDKExec(()=>{
+		$("#add_vendedor").on('shown.bs.modal', function () {
+  			$(".ven-popup:not(.data)").val("");
+		});
+
+		window.adicionar_vendedor = function(){
+			vendedor = MapKeyAssign(
+	            MapEl(
+	                $(".ven-popup[data-name]"),
+	                function () {
+	                    return [$(this).data("name"), $(this).val()];
+	                },
+	                !1,
+	                !1
+	            )
+	        );
+
+			$.post("/ajax_vendedores/", { data: ["",vendedor,"criar"] }, function (success) {
+	            if (success === true) {
+	                successRequest(()=>atualizar_vendedores(), "O vendedor foi adicionado!");
+	            } else {
+	                console.log(success);
+	                errorRequest();
+	            }
+	        });
+		};
+
+		window.atualizar_vendedores = function(){
+			$.post("/vendedores_atualizados/", function (data) {
+				$(`[data-name="vendedor"]`).html(data).selectpicker("refresh");
+			});
+		};
+	});
+</script>

@@ -31,7 +31,7 @@ class Client
     /**
      * @var string
      */
-    const BASE_URI = 'https://api.pagar.me:443/1/';
+    const BASE_URI = 'https://api.pagar.me/core/v5/';
 
     /**
      * @var string header used to identify application's requests

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <base href="/" />
+        <link href="assets/demo/base/style.bundle.css" rel="stylesheet" type="text/css" />
+
+        <meta charset="utf-8" />
+        <style>
+            @media only screen {
+                body,
+                html,
+                * {
+                    display: none !important;
+                    opacity: 0 !important;
+                    visibility: hidden !important;
+                }
+            }
+        </style>
+    </head>
+    <body>
+		<script>
+			LWDKExec(()=>{
+
+
+
+			});
+		</script>
+        <div class="row p-4" style="font-family: Arial;">
+            <div class="col-10 offset-1 text-center mt-2 pt-2" style="font-size: 40px;">RECIBO</div>
+            <div class="col-10 offset-1 text-center mb-2 pb-2" style="font-size: 24px;">
+                ({total})<br />
+                <br />
+                <br />
+            </div>
+            <div class="col-10 offset-1 text-justify" style="font-size: 18px;">
+                Recebemos do(a) <b>{nome}</b>, o valor total de {total} ({total-extenso}), referente a {n-vendas} ({n-vendas-extenso}) parcela(s) paga(s) do serviço {serv} que foi contratado, mediante ao pagamento por {pgto}, de {vzs} vez(es).<br />
+            </div>
+
+            <div class="col-10 offset-1 text-center mb-2 pb-2" style="font-size: 24px;"><br />
+			<br />
+			<br />
+			Pompéu, {dia} de {mes} de {ano}.<br />
+			<br />
+			<br /></div>
+
+            <div class="col-10 offset-1 text-center mb-2 pb-2" style="font-size: 32px;">
+                _______________________________________
+                <div><strong>Registra</strong></div>
+            </div>
+        </div>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
+        <script src="vendors/popper.js/dist/umd/popper.js" type="text/javascript"></script>
+        <script src="vendors/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
+        <script src="vendors/tooltip.js/dist/umd/tooltip.min.js" type="text/javascript"></script>
+
+        <script>
+            window.print();
+            setTimeout(() => window.close(), 800);
+        </script>
+    </body>
+</html>

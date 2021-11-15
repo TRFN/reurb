@@ -102,8 +102,9 @@ var SnippetLogin = function() {
 	                    btn.removeClass('m-loader m-loader--right m-loader--light').attr('disabled', false);
                         if(response !== "on"){
 	                        showErrorMsg(form, 'danger', 'Usuario ou senha invalidos!');
+							console.log(response);
                         } else {
-                            window.top.location.href = returnURL.length < 1 ? "/admin/" : returnURL;
+                            window.top.location.href = returnURL.length < 1 ? "/" : returnURL;
                         }
                     }, 600);
                 }

@@ -1,0 +1,251 @@
+<div class="panel card row" id="adc-entrada">
+    <div class="card-dialog card-lg" role="document">
+        <div class="card-content">
+			<div class="card-header text-right p-4">
+				<h2 class="card-title pl-4 float-left pt-4 mt-4">{titulo}</h2>
+                <a type="button" class="btn btn-warning mr-4" href="/imovel/"> &nbsp;&lt;&nbsp; Página Principal</a>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<button type="button" class="m-4 btn btn-success submit btn-lg">{texto_botao} Dados</button>
+            </div>
+            <div class="card-body row add-form col-md-8 offset-md-2">
+				<div class="imovel campos_ends row my-3 p-1 mb-1 content-align-justify">
+					<div class="category form-group col-12 row mt-2 category">
+						<input type="hidden" data-name="id" value="{myid}" />
+						<div class="col-12 p-4 mb-3">
+							<label style="font-weight: bold; text-transform: uppercase;">vinculado ao seguinte cliente:</label>
+							<div class="input-group">
+								<select class="form-control m-bootstrap-select m_selectpicker" data-live-search="true" data-name="cliente">
+									<option selected readonly value="not">Selecione um cliente</option>
+									{clientes}
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="category form-group col-12 row mt-2 category">
+						<div class="col-12 p-1 mb-1">
+							<h2>Endereço do Imóvel</h2>
+						</div>
+						<div class="col-lg-3 col-md-6 col-sm-12 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase;">cep:</label>
+							<div class="input-group">
+								<input type="text" data-cep="" data-name="cep" class="form-control" placeholder="CEP" onkeyup="return endereco_cli.buscar_cep(this);" />
+							</div>
+						</div>
+						<div class="col-lg-7 col-md-6 col-sm-12 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase">Endereço</label>
+							<div class="input-group">
+								<input type="text" data-name="rua" class="form-control" placeholder="" />
+							</div>
+						</div>
+						<div class="col-lg-2 col-md-6 col-sm-12 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase;">Numero</label>
+							<div class="input-group">
+								<input type="text"  data-name="numero" class="form-control" placeholder="" />
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-6 col-sm-12 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase;">Complemento</label>
+							<div class="input-group">
+								<input type="text"  data-name="complemento" class="form-control" placeholder="Complemento" />
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-6 col-sm-12 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase;">Bairro</label>
+							<div class="input-group">
+								<input type="text"  data-name="bairro" class="form-control" placeholder="" />
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-6 col-sm-12 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase;">Cidade</label>
+							<div class="input-group">
+								<input type="text"  data-name="cidade" class="form-control" placeholder="" />
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-6 col-sm-12 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase;">Estado</label>
+							<div class="input-group">
+								<input type="text"  data-name="estado" class="form-control" placeholder="" />
+							</div>
+						</div>
+					</div><div class="category form-group col-12 row mt-2 category">
+						<div class="col-12 p-1 mb-1">
+							<h2>Dados do Imóvel</h2>
+						</div>
+						<div class="col-lg-4 col-md-6 col-sm-12 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase;">Tamanho (m2)</label>
+							<div class="input-group">
+								<input type="text"  data-name="tamanho" class="form-control" placeholder="" />
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-6 col-sm-12 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase;">Possui Edificação:</label>
+							<div class="input-group">
+								<select onchange="if(this.value=='s'){$('.metragem-edificacao').removeClass('m--hide');}else{$('.metragem-edificacao').addClass('m--hide');}" data-name="possuiedificacao" class="form-control" placeholder="" data-option="text">
+									<option value="s">Sim</option>
+									<option selected value="n">Não</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-6 col-sm-12 py-2 px-3 mb-2 m--hide metragem-edificacao">
+							<label style="font-weight: bold; text-transform: uppercase;">Tam. Edificação (m2)</label>
+							<div class="input-group">
+								<input type="text"  data-name="tamanho-edificacao" class="form-control" placeholder="" />
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-6 col-sm-12 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase;">Tempo de posse</label>
+							<div class="input-group">
+								<input type="text"  data-name="tempo" class="form-control" placeholder="" />
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-6 col-sm-12 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase;">forma Aquisição</label>
+							<div class="input-group">
+								<select data-name="mediante" class="form-control" placeholder="" data-option="text">
+									<option value="herança">Herança</option>
+									<option selected value="compra">Compra</option>
+									<option value="doação">Doação</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-6 col-sm-12 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase;">DATA DA AQUISIÇÃO:</label>
+							<div class="input-group">
+								<input style="font-size: 12px;" type="date" data-name="data-aquisicao" class="form-control m-input cli" placeholder="" value="" data-option="text" />
+							</div>
+						</div>
+					</div><div class="category form-group col-12 row mt-2 category">
+
+						<div class="col-12 p-1 mb-1">
+							<h2>Campos da TRT/ART</h2>
+						</div>
+						<div class="col-lg-3 col-md-6 col-sm-12 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase;">guia</label>
+							<div class="input-group">
+								<select data-name="guia" class="form-control" placeholder="" data-option="text">
+									<option value="TRT">TRT</option>
+									<option selected value="ART">ART</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-6 col-sm-12 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase;">Emissão:</label>
+							<div class="input-group">
+								<input style="font-size: 12px;" type="date" data-name="data-emissao" class="form-control m-input" placeholder="" value="" data-option="text" />
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-6 col-sm-12 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase;">Pagamento:</label>
+							<div class="input-group">
+								<input style="font-size: 12px;" type="date" data-name="data-pgto" class="form-control m-input" placeholder="" value="" data-option="text" />
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-6 col-sm-12 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase;">Valor:</label>
+							<div class="input-group">
+								<input style="font-size: 12px;" type="text" data-name="valor" onchange="atualizar_valor_final()" class="form-control m-input money" placeholder="" value="" data-option="text" />
+							</div>
+						</div>
+					</div><div class="category form-group col-12 row mt-2 category">
+
+						<div class="col-12 p-1 mb-1">
+							<h2>Produto</h2>
+						</div>
+						<div class="col-md-6 col-12 p-1 mb-1">
+							<label style="font-weight: bold; text-transform: uppercase;">tipo de produto a ser regularizado</label>
+							<div class="input-group">
+								<select data-name="produto" class="form-control" placeholder="" data-option="text">
+									<option>REURB-E</option>
+									<option selected>REURB-S</option>
+									<option>LOTEAMENTO</option>
+									<option>INOMINADA</option>
+								</select>
+							</div>
+						</div>
+
+					</div><div class="category form-group col-12 row mt-2 category">
+
+						<div class="col-12 p-1 mb-1">
+							<h2>Vendedor</h2>
+						</div>
+						<div class="col-lg-9 col-md-10 col-12 mb-3 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase;">Selecione um vendedor</label>
+							<div class="input-group">
+								<select onchange="atualizar_valor_final()" class="form-control m-bootstrap-select m_selectpicker" data-live-search="true" data-name="vendedor">
+									<option selected readonly value="not">Selecione um vendedor</option>
+									{vendedores}
+								</select>
+							</div>
+						</div><div class="col-lg-3 col-md-10 col-12 mb-3 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase;">&nbsp;</label>
+							<a
+								class="m-btn btn btn-dark btn-modern text-uppercase border-radius-2 font-weight-bold col text-white"
+								onmouseenter="$(this).css({backgroundColor: '#070'});"
+								onmouseleave="$(this).css({backgroundColor: '#566'});"
+								style="background-color: #566;  transition: background-color 150ms ease-in;"
+								 data-toggle="modal" data-target="#add_vendedor"
+							>
+								Adicionar Vendedor
+							</a>
+						</div>
+					</div><div class="category form-group col-12 row mt-2 category">
+
+						<div class="col-12 p-1 mb-1">
+							<h2>Financeiro</h2>
+						</div>
+
+
+						<div class="col-lg-4 col-md-6 col-sm-12 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase;">DATA DA VENDA:</label>
+							<div class="input-group">
+								<input style="font-size: 12px;" type="date" data-name="data" class="form-control m-input cli" placeholder="" value="" data-option="text" />
+							</div>
+						</div>
+
+						<div class="col-lg-8 col-md-6 col-sm-12 py-2 px-3 mb-2"><br></div>
+
+
+						<div class="col-lg-3 col-md-6 col-sm-12 py-2 px-3 mb-2">
+							<label style="font-weight: bold; text-transform: uppercase;">Valor do serviço:</label>
+							<div class="input-group">
+								<input onchange="atualizar_valor_final()" style="font-size: 12px;" type="text" data-name="valor-venda" class="form-control m-input money" placeholder="" value="R$ 2.5" data-option="text" />
+							</div>
+						</div>
+						<div class="col-md-6 col-12 p-1 mb-1">
+							<label style="font-weight: bold; text-transform: uppercase;">forma pagamento</label>
+							<div class="input-group">
+								<select onchange="atualizar_valor_final()" data-name="mtd-pgto" class="form-control m-bootstrap-select m_selectpicker" data-live-search="true" placeholder="" data-option="text">
+									<option selected>Dinheiro</option>
+									<option>Cartão de Crédito</option>
+									<option>Boleto</option>
+									<option>Transferência</option>
+								</select>
+								<select onchange="atualizar_valor_final()" data-name="forma-pgto" class="form-control m-bootstrap-select m_selectpicker" data-live-search="true" placeholder="" data-option="text">
+									<option selected value="vz-1">A Vista</option>
+									<option value="vz-2">Parcelado 02x</option>
+									<option value="vz-6">Parcelado 06x</option>
+									<option value="vz-10">Parcelado 10x</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-6 col-sm-12 py-2 px-3 mb-2 parcela-input">
+							<label style="font-weight: bold; text-transform: uppercase;">Parcela:</label>
+							<div class="input-group">
+								<input style="font-size: 12px;" type="text" data-name="valor-parcela" readonly class="bg-white form-control m-input money" placeholder="" value="R$ 0.00" data-option="text" />
+							</div>
+						</div>
+
+						<input style="font-size: 12px;" type="hidden" data-name="valor-final" readonly class="form-control m-input money" placeholder="" value="R$ 0.00" data-option="text" />
+
+					</div>
+				</div>
+            </div>
+			<!-- Contratos ? -->
+            <div class="card-footer text-right p-4">
+				<button type="button" class="m-4 btn btn-success submit btn-lg">{texto_botao} Dados</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script lwdk-addons src="/js/imv/imvform.js" lwdk-vars="on"></script>

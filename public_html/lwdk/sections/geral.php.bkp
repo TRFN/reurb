@@ -1,0 +1,530 @@
+<?php
+
+	trait cliente {
+		function page_relatorio_vendedor_imprimir(UITemplate $content){
+			// $this->dbg($_POST);
+			$content->uiTemplate("recibo-vendedor");
+			$total = $_POST['comissao'];
+			$content->applyVars(array(
+				"total" => "R$ " . number_format($_POST['comissao'], 2, ",", "."),
+				"total-extenso" => clsTexto::valorPorExtenso($total, true, false),
+				"n-vendas" => $_POST['qtd'],
+				"n-vendas-extenso" => clsTexto::valorPorExtenso($_POST['qtd'], false, true),
+				"comissao" => $_POST["perc"],
+				"nome" => $_POST["nome"]
+			));
+			echo $content->getCode();
+		}
+
+		function get_vendedores($get = -1){
+			return $this->database()->query("vendedores", $get === -1 ? "id > -1":"id = {$get}");
+		}
+
+		function get_clientes($get = -1){
+			return $this->database()->query("clientes", $get === -1 ? "id > -1":"id = {$get}");
+		}
+
+		function transform_to_option($in, $txt = "nome", $id = "id"){
+			$out = "";
+
+			foreach($in as $data){
+				$out .= "<option value='{$data[$id]}'>{$data[$txt]}</option>";
+			}
+
+			return $out;
+		}
+
+		function page_vendedores_atualizados(){
+			exit('<option selected readonly value="not">Selecione um vendedor</option>' . $this->transform_to_option($this->get_vendedores()));
+		}
+
+		function page_vendedores_comissao(){
+			$this->json($this->get_vendedores($_POST["v"])[0]["comissao"]);
+		}
+
+		function page_cliente(UITemplate $content){
+            $content->minify = true;
+
+			$vars = [];
+			$vars["myid"]    = "";
+			$vars["data"]    = "";
+			$vars["modo"]    = "";
+			$vars["titulo"]  = "";
+			$vars["cliente"] = "[]";
+			$vars["conjuge"] = "[]";
+			$vars["imoveis"] = "[]";
+			$vars["texto_botao"] = "";
+			$vars["vendedores"] = $this->transform_to_option($this->get_vendedores());
+			$vars["form-vendedor"] = $content->loadModel("vendedor/formulario", []);
+
+			switch($this->url(1)){
+				case "novo":
+					$vars["myid"] = $this->database()->newID("clientes");
+					$vars["data"] = date("Y-m-d");
+					$vars["modo"] = "criar";
+					$vars["titulo"] = "Adicionar Novo Cliente";
+					$vars["texto_botao"] = "Salvar";
+
+					$content = $this->simple_loader($content, "cliente/formulario", $vars);
+
+					echo $content->getCode();
+				break;
+				case "editar":
+					$vars["myid"] = $this->url(2);
+					$vars["data"] = date("Y-m-d");
+					$vars["modo"] = "mod";
+					$vars["titulo"] = "Modificar Este Cliente";
+					$vars["texto_botao"] = "Modificar";
+
+					$id = $vars["myid"];
+					$vars["cliente"] = json_encode($this->database()->query("clientes", "id = {$id}"));
+					$vars["conjuge"] = json_encode($this->database()->query("conjuges", "id = {$id}"));
+					$vars["imoveis"] = json_encode($this->database()->query("imoveis",  "cliente = {$id}"));
+
+					$content = $this->simple_loader($content, "cliente/formulario", $vars);
+
+					echo $content->getCode();
+				break;
+				default:
+					$clientes = $this->get_clientes_status();
+
+					$btnTxt          = "Cliente";
+					$keyword         = "cliente";
+					$db              = $clientes;
+					$titulos         = "Nome,E-mail,Telefone,Documento,Estado Civil";
+					$dados           = "nome,email,tel1,doc,estado-civil";
+					$keyid           = "id";
+					$titulo          = "Gerir Clientes Cadastrados";
+
+					exit($this->_tablepage($content,$keyword,$titulos,$dados,$keyid,$titulo,$db,$btnTxt)->getCode());
+				break;
+			}
+        }
+
+		function get_clientes_status(){
+			$fin = $this->page_financeiro_data(true);
+
+			// $this->dbg($fin);
+
+			$clientes = [];
+
+			foreach($fin["valores"] as $dat){
+				$cliente = $dat[0];
+				$pendentes = [];
+				// $this->dbg($dat[1]);
+				foreach($dat[2] as $imovel){
+					$date = new DateTime($cliente["data"]);
+					$vzs = (int)preg_replace("/[^0-9]/", "", $imovel["forma-pgto"]);
+					// $this->dbg($vzs);
+					for($vz = 0; $vz < $vzs; $vz++){
+						// $this->dbg($date->format("d/m/Y"));
+
+						$date->modify('+1 month');
+						if(strtotime($d1=$date->format("Y-m-d")) < strtotime($d2=date("Y-m-d"))){
+							if(count($pgto=$this->database()->query("pgtos", "cliente = {$cliente["id"]} and imovel = {$imovel["id"]} and data = " . $date->format("d/m/Y"))) > 0){
+								if($pgto[0]["status"] === "not"){
+									$pendentes[] = [$date->format("d/m/Y"), $pgto[0]["imovel"], $this->diff_dates($d2,$d1),$vz+1];
+								}
+							} else {
+								$pendentes[] = [$date->format("d/m/Y"), $imovel["id"], $this->diff_dates($d2,$d1),$vz+1];
+							}
+						}
+					}
+				}
+				$cliente["pendentes"] = $pendentes;
+				$clientes[] = $cliente;
+			}
+
+			return $clientes;
+		}
+
+		function page_ajax_cliente(){
+			$id      = isset($_POST["data"][0]) ? $_POST["data"][0]:"";
+			$cliente = isset($_POST["data"][1]) ? $_POST["data"][1]:"";
+			$conjuge = isset($_POST["data"][2]) ? $_POST["data"][2]:"";
+			$imoveis = isset($_POST["data"][3]) ? $_POST["data"][3]:"";
+			$modo    = isset($_POST["data"][4]) ? $_POST["data"][4]:"";
+
+			if($modo == "criar"){
+				if($conjuge !== "not"){
+					$conjuge["id"] = $id;
+					$this->database()->push("conjuges", array($conjuge));
+				}
+
+				$cliente["id"] = $id;
+
+				$this->database()->push("clientes", array($cliente));
+
+				for($i = 0; $i < count($imoveis); $i++){
+					$imoveis[$i]["id"] = $this->database()->newID("imoveis");
+					$imoveis[$i]["cliente"] = $id;
+				}
+
+				$this->database()->push("imoveis", $imoveis);
+			} elseif($modo == "mod"){
+				if($conjuge !== "not"){
+					$conjuge["id"] = $id;
+					$this->database()->setWhere("conjuges", "id = {$id}", $conjuge);
+				}
+
+				$cliente["id"] = $id;
+
+				$this->database()->setWhere("clientes", "id = {$id}", $cliente);
+				for($i = 0; $i < count($imoveis); $i++){
+					// $imoveis[$i]["id"] = $this->database()->newID("imoveis");
+					// $imoveis[$i]["cliente"] = $id;
+					$this->database()->setWhere("imoveis", "id = {$imoveis[$i]["id"]}", $imoveis[$i]);
+					// $this->json($imoveis[$i]);
+				}
+			} elseif($cliente == "erase"){
+				$this->database()->deleteWhere("conjuges", "id = {$id}");
+				$this->database()->deleteWhere("clientes", "id = {$id}");
+				$this->database()->deleteWhere("imoveis", "cliente = {$id}");
+			}
+			$this->json(true);
+		}
+
+		function page_vendedor(UITemplate $content){
+            $content->minify = true;
+
+			$vars = [];
+			$vars["myid"]    = "";
+			$vars["data"]    = "";
+			$vars["modo"]    = "";
+			$vars["titulo"]  = "";
+			$vars["vendedor"] = "[]";
+			$vars["texto_botao"] = "";
+
+			switch($this->url(1)){
+				case "novo":
+					$vars["myid"] = $this->database()->newID("vendedores");
+					$vars["data"] = date("Y-m-d");
+					$vars["modo"] = "criar";
+					$vars["titulo"] = "Adicionar Novo Vendedor";
+					$vars["texto_botao"] = "Salvar";
+
+					$content = $this->simple_loader($content, "vendedor/formulario", $vars);
+
+					echo $content->getCode();
+				break;
+				case "editar":
+					$vars = [];
+					$vars["myid"] = $this->url(2);
+					$vars["data"] = date("Y-m-d");
+					$vars["modo"] = "mod";
+					$vars["titulo"] = "Modificar Este Vendedor";
+					$vars["texto_botao"] = "Modificar";
+
+					$id = $vars["myid"];
+					$vars["vendedor"] = json_encode($this->database()->query("vendedores", "id = {$id}"));
+
+					$content = $this->simple_loader($content, "vendedor/formulario", $vars);
+
+					echo $content->getCode();
+				break;
+				default:
+					$vendedores = $this->database()->query("vendedores", "id > -1");
+					foreach($vendedores as $k => $vendedor){
+						$vendedores[$k]["comissao"] = "{$vendedores[$k]["comissao"]}%";
+					}
+					$btnTxt          = "Vendedor";
+					$keyword         = "vendedor";
+					$db              = $vendedores;
+					$titulos         = "Nome,E-mail,Comissão";
+					$dados           = "nome,email,comissao";
+					$keyid           = "id";
+					$titulo          = "Gerir Vendedores Cadastrados";
+
+					exit($this->_tablepage($content,$keyword,$titulos,$dados,$keyid,$titulo,$db,$btnTxt)->getCode());
+				break;
+			}
+        }
+
+		function page_ajax_vendedores(){
+			$id       = isset($_POST["data"][0]) ? $_POST["data"][0]:"";
+			$vendedor = isset($_POST["data"][1]) ? $_POST["data"][1]:"";
+			$modo     = isset($_POST["data"][2]) ? $_POST["data"][2]:"";
+
+			if($modo == "criar"){
+				$vendedor["id"] = $this->database()->newID("vendedores");
+
+				$this->database()->push("vendedores", array($vendedor));
+			} elseif($modo == "mod"){
+				$vendedor["id"] = $id;
+				$this->database()->setWhere("vendedores", "id = {$id}", $vendedor);
+			} elseif($vendedor == "erase"){
+				$this->database()->deleteWhere("vendedores", "id = {$id}");
+			}
+			$this->json(true);
+		}
+
+		function page_relatorio_vendedor(UITemplate $content){
+            $content->minify = true;
+
+			$vars = [];
+			$vars["myid"]    = "";
+			$vars["data"]    = "";
+			$vars["modo"]    = "";
+			$vars["titulo"]  = "";
+			$vars["vendedor"] = "[]";
+			$vars["texto_botao"] = "";
+
+			switch($this->url(1)){
+				case "exportar":
+					$imoveis = $this->database()->query("imoveis", "id > -1");
+					$vendas = [];
+					foreach($imoveis as $imovel){
+						if($imovel["vendedor"]==$this->url(2)){
+							$cli = $this->database()->query("clientes", "id = {$imovel["cliente"]}");
+							$cli = $cli[0];
+							$imovel["cliente"] = $cli["nome"];
+							$imovel["imovel"] = $imovel["id"];
+							$ven = $this->database()->query("vendedores", "id = {$imovel["vendedor"]}");
+							$ven = $ven[0];
+							$ven = array_merge($cli, $ven);
+							$vendas[] = array_merge($ven,$imovel);
+						}
+					}
+					// $this->dbg($vendas);
+					$vendedores = $vendas;
+					foreach($vendedores as $k => $vendedor){
+						$vendedores[$k]["valor"] = "R$ " . number_format($comissao=((float)((int)str_replace(",",".",str_replace(".","",str_replace("R$ ", "",$vendedores[$k]["valor-venda"]))) / 100) * (int)$vendedores[$k]["comissao"]), 2, ",", ".");
+						// $this->dbg($comissao);
+						$vendedores[$k]["comissao"] = "{$vendedores[$k]["comissao"]}%";
+						$vendedores[$k]["acao"] = "<input type=checkbox data-imovel-id='{$vendedores[$k]["imovel"]}' data-comissao='{$comissao}' data-perc='{$vendedores[$k]["comissao"]}' data-nome='{$vendedores[$k]["nome"]}' class='incluir_dado' />";
+					}
+					$keyword         = "vendedor";
+					$btnTxt          = "Vendedor";
+					$db              = $vendedores;
+					$titulos         = "Nome,Cliente,Valor Comissão,<label class='d-block'><input data-skin=white data-toggle=m-tooltip data-placement=top title='' data-original-title='Selecionar Todos' type=checkbox class='incluir_todos float-left d-block' />&nbsp;Incluir no Recibo</label>";
+					$dados           = "nome,cliente,valor,acao";
+					$keyid           = "id";
+					$titulo          = "Relatório dos Vendedores";
+
+					exit($this->_tablepage($content,$keyword,$titulos,$dados,$keyid,$titulo,$db,$btnTxt,"not",false,"vendedor/exportar")->getCode());
+				break;
+				default:
+					$vendedores = $this->database()->query("vendedores", "id > -1");
+					foreach($vendedores as $k => $vendedor){
+						$vendedores[$k]["comissao"] = "{$vendedores[$k]["comissao"]}%";
+						$vendedores[$k]["acao"] = "<a class='btn m-btn btn-outline-dark' href='/relatorio_vendedor/exportar/{$vendedores[$k]["id"]}/'><i class='la la-list'></i>&nbsp;Acessar</a>";
+					}
+					$btnTxt          = "Vendedor";
+					$keyword         = "vendedor";
+					$db              = $vendedores;
+					$titulos         = "Nome,E-mail,Comissão,Relatorio";
+					$dados           = "nome,email,comissao,acao";
+					$keyid           = "id";
+					$titulo          = "Relatório dos Vendedores";
+
+					exit($this->_tablepage($content,$keyword,$titulos,$dados,$keyid,$titulo,$db,$btnTxt,"not",false,"vendedor/texp")->getCode());
+				break;
+			}
+        }
+
+		function page_imovel(UITemplate $content){
+            $content->minify = true;
+
+			$vars = [];
+			$vars["myid"]    = "";
+			$vars["data"]    = "";
+			$vars["modo"]    = "";
+			$vars["titulo"]  = "";
+			$vars["imovel"] = "[]";
+			$vars["texto_botao"] = "";
+			$vars["clientes"] = $this->transform_to_option($this->get_clientes());
+
+			switch($this->url(1)){
+				case "novo":
+					$vars["myid"] = $this->database()->newID("imoveis");
+					$vars["data"] = date("Y-m-d");
+					$vars["modo"] = "criar";
+					$vars["titulo"] = "Adicionar Novo Imovel";
+					$vars["texto_botao"] = "Salvar";
+
+					$content = $this->simple_loader($content, "imovel/formulario", $vars);
+
+					echo $content->getCode();
+				break;
+				case "editar":
+					$vars["myid"] = $this->url(2);
+					$vars["data"] = date("Y-m-d");
+					$vars["modo"] = "mod";
+					$vars["titulo"] = "Modificar Este Imóvel";
+					$vars["texto_botao"] = "Modificar";
+
+					$id = $vars["myid"];
+					$vars["imovel"] = json_encode($this->database()->query("imoveis", "id = {$id}"));
+
+					$content = $this->simple_loader($content, "imovel/formulario", $vars);
+
+					echo $content->getCode();
+				break;
+				default:
+					$btnTxt          = "Imóvel";
+					$keyword         = "imovel";
+					$db              = "imoveis";
+					$titulos         = "CEP,Guia,Valor de Venda";
+					$dados           = "cep,guia,valor-venda";
+					$keyid           = "id";
+					$titulo          = "Gerir Imóveis Cadastrados";
+
+					exit($this->_tablepage($content,$keyword,$titulos,$dados,$keyid,$titulo,$db,$btnTxt)->getCode());
+				break;
+			}
+        }
+
+		function page_ajax_imoveis(){
+			$id       = isset($_POST["data"][0]) ? $_POST["data"][0]:"";
+			$imovel   = isset($_POST["data"][1]) ? $_POST["data"][1]:"";
+			$modo     = isset($_POST["data"][2]) ? $_POST["data"][2]:"";
+
+			if($modo == "criar"){
+				$imovel["id"] = $id;
+				$this->database()->push("imoveis", array($imovel));
+			} elseif($modo == "mod"){
+				$imovel["id"] = $id;
+				$this->database()->setWhere("imoveis", "id = {$id}", $imovel);
+			} elseif($imovel == "erase"){
+				$this->database()->deleteWhere("imoveis", "id = {$id}");
+			}
+			$this->json(true);
+		}
+
+		function page_financeiro(UITemplate $content){
+			$content->minify = true;
+
+			$vars = ["nav-meses"=>"", "content-meses"=>"", "ano" => date("Y"), "mes" => date("m"), "dia" => date("d")];
+
+			$vars["thead-inad"] = "<th>Data</th><th>Nome</th><th>Email</th><th>Parcela N</th><th>Imovel</th><th>Atraso</th>";
+
+			$vars["tbody-inad"] = "";
+
+			foreach($this->get_clientes_status() as $cli){
+				foreach($cli["pendentes"] as $pendencia){
+					$imovel = $this->database()->query("imoveis", "id = {$pendencia[1]}");
+					if(count($imovel)){
+						$imovel = $imovel[0];
+						$cor = (140+$pendencia[2]);
+						$vars["tbody-inad"] .= "<tr style='background-color: hsl({$cor},60%,99%)'><td>{$pendencia[0]}</td><td><a style='color: #000!important;' target=_blank href='/cliente/editar/{$cli["id"]}/'>{$cli["nome"]}</a></td><td>{$cli["email"]}</td><td># {$pendencia[3]}</td><td><a style='color: #000!important;' target=_blank href='/imovel/editar/{$imovel["id"]}/'>{$imovel["rua"]} N {$imovel["numero"]}<br>{$imovel["bairro"]}<br>{$imovel["cidade"]} / {$imovel["estado"]}</a></td><td>{$pendencia[2]} dia(s)</td></tr>";
+					}
+				}
+			}
+
+			$meses = [
+				["jan","Janeiro",0],
+				["fev","Fevereiro",0],
+				["mar","Março",0],
+				["abr","Abril",0],
+				["mai","Maio",0],
+				["jun","Junho",0],
+				["jul","Julho",0],
+				["ago","Agosto",0],
+				["set","Setembro",0],
+				["out","Outubro",0],
+				["nov","Novembro",0],
+				["dez","Dezembro",0]
+			];
+
+			foreach($meses as $imes=>$mes){
+				$imes = $imes + 1;
+
+				$act = (($mes[2] == 1 || (int)$vars["mes"] == (int)$imes) ? [" active", ' aria-selected="true"'," show active"]:["","",""]);
+
+				$vars["nav-meses"] .= '
+				  <a class="nav-item nav-link'.$act[0].'" id="link-'.$mes[0].'" data-toggle="tab" href="#'.$mes[0].'" role="tab" aria-controls="'.$mes[0].'" '.$act[1].'>'.$mes[1].'</a>
+				';
+
+				$vars["content-meses"] .= '<div class="tab-pane mes-'.$imes.' fade'.$act[2].'" id="'.$mes[0].'" role="tabpanel" aria-labelledby="'.$mes[0].'">
+					<h2>Mês de '.$mes[1].' de <span class="ano">'.$vars["ano"].'</span></h2>
+					<br><br>
+					<div class="table-responsive">
+						<h4>Pagamentos deste mês</h4>
+							<table id="table-'.$mes[0].'" class="table table-bordered table-hover table-striped">
+					        <thead>
+					            <tr>
+					                <th style="width: 50px!important;">Data</th>
+					                <th style="width: 180px!important;">Nome</th>
+					                <th style="width: 120px!important;">Vendedor</th>
+					                <th style="width: 180px!important;">Imóvel</th>
+					                <th style="width: 60px!important;">V. Parcela</th>
+					                <th style="width: 60px!important;">Status</th>
+					            </tr>
+					        </thead>
+		        			<tbody>
+		        			</tbody>
+							<tfooter><tr><td colspan=7 class="text-right"><button class="m-0 mt-2 btn btn-dark m-btn" data-toggle="collapse" data-target="#indices-' . $imes . '">Exibir/Esconder Gráficos</button></td></tr><tr><td class="bg-secondary py-4 collapse show" id="indices-' . $imes . '" colspan=7>
+								<div class="indices row p-0 m-0">
+									<div class="col-lg col-md-4 col-12">
+										<h4>Pessoas em dia</h4>
+										<h6 class="emdia-'.$imes.'">&nbsp;0&nbsp;</h6>
+										<div style="font-family: Arial Black;" class="grafico1-'.$imes.'"></div>
+									</div>
+
+									<div class="col-lg col-md-4 col-12">
+										<h4>Pessoas inadimplentes</h4>
+										<h6 class="devendo-'.$imes.'">&nbsp;0&nbsp;</h6>
+										<div style="font-family: Arial Black;" class="grafico2-'.$imes.'"></div>
+									</div>
+								</div>
+							</td></tr></tfooter>
+	    				</table>
+					</div>
+					<br><br>
+				</div>';
+			}
+
+			$vars["data"] = date("Y-m-d");
+
+            $content = $this->simple_loader($content, "financeiro/fluxo", $vars);
+
+            echo $content->getCode();
+        }
+
+		function page_financeiro_data($fn=false){
+			$valores = [];
+
+			$clientes = [];
+
+			foreach($this->get_clientes() as $cliente){
+				$conjuge = $this->database()->query("conjuges", "id = {$cliente["id"]}");
+				$imoveis = $this->database()->query("imoveis",  "cliente = {$cliente["id"]}");
+				foreach(array_keys($imoveis) as $index){
+					$imov_id = $imoveis[$index]["id"];
+					// $this->dbg($this->database()->query("pgtos", "cliente = {$cliente["id"]} and imovel = {$imov_id}"));
+					$imoveis[$index]["pgtos"] = [];
+					foreach($this->database()->query("pgtos", "cliente = {$cliente["id"]} and imovel = {$imov_id}") as $pgto){
+						$imoveis[$index]["pgtos"][$pgto["data"]] = $pgto["status"];
+					}
+					$imoveis[$index]["vendedor"] = $this->database()->query("vendedores", "id = {$imoveis[$index]["vendedor"]}");
+					$imoveis[$index]["vendedor"] = $imoveis[$index]["vendedor"][0];
+
+					// foreach(array_keys($imoveis[$index]["pgtos"]) as $pgt){
+					// 	$imoveis[$index]["pgtos"][$pgt] =
+					// }
+				}
+				$clientes[] = [$cliente, $conjuge, $imoveis];
+			}
+
+			$result = (["valores" => $clientes, "checksum"=>sha1(json_encode($clientes))]);
+			return($fn===true)?$result:$this->json($result);
+		}
+
+		function page_change_status(){
+			if(count($this->database()->query("pgtos", "cliente = {$_POST["data"][0]} and imovel = {$_POST["data"][2]} and data = {$_POST["data"][3]}")) > 0){
+				$this->database()->setWhere("pgtos", "cliente = {$_POST["data"][0]} and imovel = {$_POST["data"][2]} and data = {$_POST["data"][3]}", ["status" => ($_POST["data"][4] == 1?"pg":'not')]);
+			} else {
+				$this->database()->push("pgtos", array(
+					array(
+						"cliente" => $_POST["data"][0],
+						"imovel" => $_POST["data"][2],
+						"vendedor" => $_POST["data"][1],
+						"data" => $_POST["data"][3],
+						"status" => ($_POST["data"][4] == 1?"pg":'not')
+					)
+				));
+			}
+		}
+	}
+
+?>

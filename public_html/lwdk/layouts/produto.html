@@ -1,0 +1,183 @@
+<div class="m-grid__item m-grid__item--fluid m-wrapper">
+    <!-- BEGIN: Subheader -->
+    <div class="m-subheader ">
+        <div class="d-flex align-items-center">
+            <div class="mr-auto">
+                <h3 class="m-subheader__title ">{TITLE}</h3>
+            </div>
+            <div>
+                <div class="col text-right">
+                    <button class="btn btn-outline-danger" onclick="return Go('produto/listar')"><i class="la la-arrow-left"></i><span class="d-none d-md-inline">&nbsp;Voltar</span></button>&nbsp;&nbsp;&nbsp;
+                    <button class="btn btn-info" onclick="$('#dados_produto').find('.submit:first')[0].click();"><i class="la la-save"></i><span class="d-none d-md-inline">&nbsp;{botao-txt}</span></button>
+                </div>
+    		</div>
+        </div>
+    </div>
+    <!-- END: Subheader -->
+    <div class="m-content">
+        <div class="row">
+            <div class="col-xl-12 col-lg-8">
+                <div class="m-portlet m-portlet--full-height m-portlet--tabs  ">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="dados_produto">
+                            <div class="m-portlet__body">
+                            <div class="form-group m-form__group row">
+								<div class="col-1">
+                                    <br>
+                                </div>
+								<label class="col-md-2 col-12 col-form-label">Código do Produto</label>
+								<div class="col-md-3 col-12">
+                                    <input class="form-control m-input" type="text" data-name="codigo" value="{codigo}">
+                                </div>
+							</div>
+							<div class="form-group m-form__group row">
+								<div class="col-1">
+                                    <br>
+                                </div>
+								<label class="col-md-2 col-12 col-form-label">Qtd. Estoque Funcionarios:</label>
+								<div class="col-md-2 col-12">
+                                    <input class="form-control m-input" type="number" data-name="quantidade_estoque_funcionarios" value="{quantidade_estoque_funcionarios}">
+                                </div><div class="col-1">
+                                    <br>
+                                </div>
+								<label class="col-md-2 col-12 col-form-label">Qtd. Estoque Barreiro:</label>
+								<div class="col-md-2 col-12">
+                                    <input class="form-control m-input" type="number" data-name="quantidade_estoque_barreiro" value="{quantidade_estoque_barreiro}">
+                                </div>
+                            </div>
+                              <div class="form-group m-form__group row">
+                                  <div class="col-1">
+                                      <input data-name="id"type="hidden"value="{id}"/>
+                                      <input data-name="tp"type="hidden"value="prod"/>
+                                  </div>
+                                  <label class="col-md-2 col-12 col-form-label">Nome do produto</label>
+                                  <div class="col-md-7 col-12">
+                                      <input class="form-control m-input" type="text" data-name="nome" value="{nome}">
+                                  </div>
+                              </div>
+                                <div class="form-group m-form__group row">
+                                    <div class="col-1"></div><label class="col-md-2 col-12 col-form-label">Categoria</label>
+                                    <div class="col-md-7 col-12">
+                                        <select data-name="categoria"  class="form-control m-bootstrap-select  m_selectpicker" data-live-search="true">
+                                            <option disabled selected class="m--hide">Selecione uma Categoria</option>
+                                            {categorias}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group m-form__group row">
+                                    <div class="col-1"></div><label class="col-md-2 col-12 col-form-label">Subcategoria</label>
+                                    <div class="col-md-7 col-12">
+                                        <select data-name="subcategoria" class="form-control m-bootstrap-select  m_selectpicker" data-live-search="true">
+                                            <option disabled selected class="m--hide">&nbsp;</option>
+                                            {subcathtml}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group m-form__group row"><div class="col-12"><br></div></div>
+
+                                <div class="form-group m-form__group row"><div class="col-12"><br></div></div>
+                                <div class="form-group m-form__group row">
+                                    <div class="col-1"></div>
+                                    <label class="col-md-2 col-12 col-form-label">Pre&ccedil;os e Afins</label>
+                                    <label class="col-md col-12 col-form-label text-center">Valor</label>
+                                    <div class="col-md col-12 ">
+                                        <input type="text" data-name="valor" class="form-control money" value="{valor}"/>
+                                    </div>
+
+                                    <label class="col-md col-12 col-form-label text-center">Valor Promocional</label>
+                                    <div class="col-md col-12 ">
+                                        <input type="text" data-name="valor-a-vista" class="form-control money" value="{valor-a-vista}"/>
+                                    </div>
+
+                                    <div class="col-2"></div>
+                                </div>
+
+                                <div class="form-group m-form__group row"><div class="col-12"><br></div></div>
+                                <div class="form-group m-form__group row">
+                                    <div class="col-1"></div><label class="col-md-2 col-12 col-form-label">Opções</label>
+                                    <div class="col-md-7 col-12" style="display: inline-block;">
+										<div>
+											<span class="form-group m-form__group col-md-5 col-sm-12 text-center" style="display: inline-block;">
+                                                <label class="col-form-label">Produto Ativo?</label><br />
+                                                <input data-switch="true" data-value="{ativo}" type="checkbox" data-name="ativo" data-bool=true>
+                                            </span>
+												<span class="form-group m-form__group col-md-5 col-sm-12 text-center" style="display: inline-block;">
+	                                                <label class="col-form-label">Disponivel na loja?</label><br />
+	                                                <input data-switch="true" data-value="{naloja}" type="checkbox" data-name="naloja" data-bool=true>
+	                                            </span>
+
+                                        </div>
+										<div>
+											<span class="form-group m-form__group col-md-5 col-sm-12 text-center" style="display: inline-block;">
+												<label class="col-form-label">Promoção da Semana?</label><br />
+												<input data-switch="true" data-value="{promocao}" type="checkbox" data-name="promocao" data-bool=true>
+											</span>
+                                            <span class="form-group m-form__group col-md-5 col-sm-12 text-center" style="display: inline-block;">
+                                                <label class="col-form-label">É Lan&ccedil;amento?</label><br />
+                                                <input data-switch="true" data-value="{lancamento}" type="checkbox" data-name="lancamento" data-bool=true>
+                                            </span>
+                                        </div>
+										<div>
+                                            <span class="form-group m-form__group col-md-5 col-sm-12 text-center" style="display: inline-block;">
+                                                <label class="col-form-label">Disponivel para Vender?</label><br />
+                                                <input data-switch="true" data-value="{venda}" type="checkbox" data-name="venda" data-bool=true>
+                                            </span>
+                                            <span class="form-group m-form__group col-md-5 col-sm-12 text-center" style="display: inline-block;">
+                                                <label class="col-form-label">Disponivel para Aluguel?</label><br />
+                                                <input data-switch="true" data-value="{aluguel}" type="checkbox" data-name="aluguel" data-bool=true>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group m-form__group row"><div class="col-12"><br></div></div>
+                                <div class="form-group m-form__group row">
+                                    <div class="col-1"></div><label class="col-md-2 col-12 col-form-label">Gerir imagens do produto</label>
+                                    <div class="col-md-7 col-12">
+                                        <form action="{myurl}" method="post" class="col-12" id="img_upload" style="border: 0;">
+                                            <div class="m-dropzone" style="border: 0;">
+                                            <div class="m-dropzone__msg dz-message needsclick">
+                                                <h3 class="m-dropzone__msg-title m-btn m-btn--pill btn-outline-info btn" style="padding: 16px;">Clique aqui para realizar o upload</h3>
+                                            </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div id="gallery" class="col-12 row fotos-produto sortable start"><div class="col text-center">Voc&ecirc; ainda n&atilde;o fez o upload de imagens...</div></div>
+                                <div class="col-12"><br><input type=hidden data-name="imagens" data-json=true value="{imagens}" /><br></div>
+                                <div class="form-group m-form__group row">
+                                    <div class="col-1"></div><label class="col-md-2 col-12 col-form-label">Descrição Curta</label>
+                                    <div class="col-md-7 col-12">
+                                        <textarea type=summernote data-name="descricao-curta" style="height: 100px" class="summernote">{descricao-curta}</textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group m-form__group row">
+                                    <div class="col-1"></div><label class="col-md-2 col-12 col-form-label">Descrição Longa</label>
+                                    <div class="col-md-7 col-12">
+                                        <textarea type=summernote data-name="descricao-longa" style="height: 300px" class="summernote">{descricao-longa}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="m-portlet__foot m-portlet__foot--fit">
+								<div class="m-form__actions">
+									<div class="row">
+                                        <div class="col-12"><br>
+										</div>
+                                        <div class="col-md-4">
+										</div>
+                                        <div class="col-md-4 text-right">
+											<button class="btn btn-info submit btn-block"><i class="la la-save"></i>&nbsp;{botao-txt}</button>
+										</div>
+                                            <div class="col-12"><br>
+    										</div>
+									</div>
+								</div>
+							</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script lwdk-addons lwdk-vars="on" src="js/forms/produtos.js"></script>

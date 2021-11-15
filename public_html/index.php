@@ -7,9 +7,7 @@
         function __construct(){
 			$this->setup();
 
-
-            $this->addApp(new admin_panel, $this, false);
-            $this->addApp(new application, $this, true);
+            $this->addApp(new admin_panel, $this);
 
             $this->renderApp();
         }

@@ -54,8 +54,9 @@ LWDKInitFunction.addFN(function(){
         ['style', ['bold', 'italic', 'underline']],
         ['fontsize', ['fontsize']],
         ['color', ['color']],
-        ['para', ['ul', 'ol', 'paragraph']],
-        ['height', ['height']]
+        ['para', ['ol', 'paragraph']],
+        ['height', ['height']],
+		['view', ['fullscreen']]
     ] }),700);
     });
 });
@@ -79,7 +80,7 @@ setInterval(function(){
 window.CheckConnection = function(){
     if(window.verifyLogged == -1)return false;
     window.verifyLogged = 1;
-    $.post("/admin/session/", function(data){
+    $.post("/session/", function(data){
         let conectado = ((typeof data === "boolean" && data === true));
 
         if(!conectado){
@@ -111,7 +112,7 @@ window.CheckConnection = function(){
                 clearInterval(timerInterval)
               }
             }).then((result) => {
-                window.top.location.href = "/admin/login/"
+                window.top.location.href = "/login/"
             });
         } else {
             setTimeout(CheckConnection, 5e3);
