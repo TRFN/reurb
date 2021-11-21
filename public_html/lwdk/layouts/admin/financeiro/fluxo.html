@@ -20,7 +20,7 @@
 			<a href="/financeiro_adicionar_saida/" data-anim-delay="3000" class="animated-btn py-4 btn m-btn btn-dark mx-2 text-uppercase" style="font-weight: bold; opacity: 0;; font-size: 14px; background-color: #a01915;border-color: #a01915;"><i class="fa ml-2 fa-minus fa-1x d-inline-block"></i><span class="d-inline-block float-right ml-2 p-0" style="overflow: hidden;">&nbsp;Saída</span></a>
 			<a href="#" data-anim-delay="2200" onclick="$('html, body').animate({scrollTop: $('.meses').offset().top - 128}, 300); event.preventDefault(); return false;" class="animated-btn py-4 btn m-btn btn-dark mx-2 text-uppercase" style="font-weight: bold; opacity: 0;; font-size: 14px; background-color: #4B0082;border-color: #4B0082;"><i class="fa ml-2 fa-calendar-alt fa-1x d-inline-block"></i><span class="d-inline-block float-right ml-2 p-0" style="overflow: hidden;">&nbsp;meses</span></a>
 			<a href="#" type="button" data-toggle="modal" data-target="#exportar_financeiro" data-anim-delay="1400" class="animated-btn py-4 btn m-btn btn-success mx-2 text-uppercase" style="font-weight: bold; opacity: 0;; font-size: 14px;"><i class="fa ml-2 fa-file-excel fa-1x d-inline-block"></i><span class="d-inline-block float-right ml-2 p-0" style="overflow: hidden;">&nbsp;Exportar</span></a>
-			<a href="#" data-anim-delay="600" class="animated-btn py-4 btn m-btn btn-dark ml-2 text-uppercase" style="font-weight: bold; opacity: 0;; font-size: 14px;"><i class="fa ml-2 fa-question fa-1x d-inline-block"></i><span class="d-inline-block float-right ml-2 p-0" style="overflow: hidden;">&nbsp;Ajuda</span></a>
+			<!-- <a href="#" data-anim-delay="600" class="animated-btn py-4 btn m-btn btn-dark ml-2 text-uppercase" style="font-weight: bold; opacity: 0;; font-size: 14px;"><i class="fa ml-2 fa-question fa-1x d-inline-block"></i><span class="d-inline-block float-right ml-2 p-0" style="overflow: hidden;">&nbsp;Ajuda</span></a> -->
 		</div>
 
 		<div class="col-lg-1 col-md-0">
@@ -120,19 +120,24 @@
 				</select>
 	  		</div> -->
 			<div class="col-12 px-4 my-2 ml-3 row">
-	  			<label class="col-12 mt-2" style="font-weight: bold; margin-left: -30px;">Desejo Exportar: </label><br>
-				<label style="font-weight: 500; transform: scale(1.2)" class="p-2 col-lg-4 text-justify col-12">
+	  			<label class="col-12 mt-2" style="font-weight: bold; margin-left: -30px;">Opções de Exportação: </label><br>
+				<label style="font-weight: 500;" class="p-2 col-lg-6 text-center col-12">
 					<input type="checkbox" data-name="entrada" data-option="bool" />
-					&nbsp;Entrada(s)
+					&nbsp;Exportar Entrada(s)
 				</label>
-				<label style="font-weight: 500; transform: scale(1.2)" class="p-2 col-lg-4 text-justify col-12">
+				<label style="font-weight: 500;" class="p-2 col-lg-6 text-center col-12">
 					<input type="checkbox" data-name="saida" data-option="bool" />
-					&nbsp;Saída(s)
+					&nbsp;Exportar Saída(s)
 				</label>
-				<label style="font-weight: 500; transform: scale(1.2)" class="p-2 col-lg-4 text-justify col-12">
-					<input type="checkbox" data-name="loja-virtual" data-option="bool" />
-					&nbsp;Loja Virtual
+				<!-- <label style="font-weight: 500;" class="p-2 col-lg-4 text-justify col-12">&nbsp;</label> -->
+				<!-- <label style="font-weight: 500;" class="p-2 col-lg-6 text-center col-12">
+					<input type="checkbox" data-name="pendente" data-option="bool" />
+					&nbsp;Incluir Transações Pendentes
 				</label>
+				<label style="font-weight: 500;" class="p-2 col-lg-6 text-center col-12">
+					<input type="checkbox" data-name="ok" data-option="bool" />
+					&nbsp;Incluir Transações Realizadas
+				</label> -->
 				<!-- <label style="font-weight: 500" class="p-2 col-lg-4 text-justify col-12">
 					<input type="checkbox" data-name="titulo" data-option="bool" checked />
 					&nbsp;Titulo
@@ -160,7 +165,7 @@
 
 
       <div class="modal-footer d-block bg-secondary">
-        <button onclick="exportar_financeiro('excel');" type="button" class="btn m-btn btn-success float-right d-inline-block mx-2" style="background-color: #292; border-color: #292;">
+        <button onclick="exportar_financeiro();" type="button" class="btn m-btn btn-success float-right d-inline-block mx-2" style="background-color: #292; border-color: #292;">
 			<i class="fa mr-2 fa-file-excel fa-1x"></i>&nbsp;Baixar Excel
 		</button>
 		<!-- <button onclick="exportar_financeiro('pdf');" type="button" class="btn m-btn btn-dark float-right d-inline-block mx-2" style="background-color: #922; border-color: #922;">

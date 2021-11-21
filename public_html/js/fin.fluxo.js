@@ -414,7 +414,9 @@ window.exportar_pagamentos = function(){
 
 	// console.log([aplicar_filtro(-1000),'{umanoantes}','{umanodepois}','{data1mesantes}','{hoje}']);
 
-	$.post("/pagamentos_gerar_relatorio/", cfg, function(data){
+	// console.log(cfg);
+	config_excel.titulo = config_excel.titulo.split("&ecirc;").join('ê');
+	$.post(`/pagamentos_gerar_relatorio/?titulo=${config_excel.titulo}&cor=${config_excel.cor}`, cfg, function(data){
 		location.href = "/" + data;
 		setTimeout(()=>$.post("/deletar_excel/", {file:data}),2000);
 	});

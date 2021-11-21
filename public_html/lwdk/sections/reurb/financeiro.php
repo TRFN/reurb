@@ -42,7 +42,7 @@
 			// $this->json($pagamentos);
 			foreach($pagamentos["valores"] as $pgto){
 				foreach($pgto[2] as $k=>$imovel){
-					if($imovel!=-1){
+					if($imovel!=-1 && isset($pgto[2][$k]["forma-pgto"])){
 						$vzs = (int)preg_replace("/[^0-9]/","","{$pgto[2][$k]["forma-pgto"]}");
 						for($ivz = 0; $ivz < $vzs; $ivz++){
 							$dtv = strtotime("+${ivz} months",strtotime($pgto[2][$k]["data"]));
@@ -561,9 +561,37 @@
 		}
 
 		function page_financeiro_home(UITemplate $content){
-            $content->minify = true;
 
 			$vars = ["nav-meses"=>"", "content-meses"=>"", "ano" => date("Y"), "mes" => date("m"), "dia" => date("d")];
+
+            $content->minify = true;
+
+			$filter = parent::control("util/dates");
+
+			$hoje = date("Y-m-d");
+
+			$filter->set($hoje);
+
+			$vars["hoje"] = $hoje;
+
+			$filter->sub("1 Month");
+
+			$vars["data1mesantes"] = $filter->get("Y-m-d");
+
+			$filter->set($hoje);
+			$filter->sum("1 Month");
+
+			$vars["data1mesdepois"] = $filter->get("Y-m-d");
+
+			$filter->set($hoje);
+			$filter->sum("1 Year");
+
+			$vars["umanodepois"] = $filter->get("Y-m-d");
+
+			$filter->set($hoje);
+			$filter->sub("1 Year");
+
+			$vars["umanoantes"] = $filter->get("Y-m-d");
 
 			$meses = [
 				["jan","Janeiro",0],
@@ -636,31 +664,258 @@
         }
 
 		function page_financeiro_gerar_relatorio(){
-			if($_POST["config"]["fmt"]=="excel"){
-				$excel = parent::control("util/excel");
-				$excel->SetDocumentTitle("relatorio-" . substr(sha1(date("dmYHis")),0,10));
-				$excel->Instance()->getActiveSheet()->fromArray($_POST["data"]);
-				$excel->Instance()->getActiveSheet()->getColumnDimension('A')->setWidth(60);
-				$excel->Instance()->getActiveSheet()->getColumnDimension('B')->setWidth(70);
-				$excel->Instance()->getActiveSheet()->getColumnDimension('C')->setWidth(30);
-				$excel->Instance()->getActiveSheet()->getColumnDimension('D')->setWidth(30);
-				$excel->Instance()->getActiveSheet()->getColumnDimension('E')->setWidth(30);
-				$excel->Instance()->getActiveSheet()->getColumnDimension('F')->setWidth(30);
-				$excel->Instance()->getActiveSheet()->getColumnDimension('G')->setWidth(30);
-				$lastrow = $excel->Instance()->getActiveSheet()->getHighestRow();
+			$req = $_REQUEST;
 
-				$excel->Instance()->getActiveSheet()->getStyle('A1:A'.$lastrow)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-				$excel->Instance()->getActiveSheet()->getStyle('B1:B'.$lastrow)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-				$excel->Instance()->getActiveSheet()->getStyle('C1:C'.$lastrow)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-				$excel->Instance()->getActiveSheet()->getStyle('D1:D'.$lastrow)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-				$excel->Instance()->getActiveSheet()->getStyle('E1:E'.$lastrow)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-				$excel->Instance()->getActiveSheet()->getStyle('F1:F'.$lastrow)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-				$excel->Instance()->getActiveSheet()->getStyle('G1:G'.$lastrow)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+			$filter = parent::control("util/dates");
 
-				exit($excel->Save("xls"));
-			} else {
-				// pdf
+			$excel = parent::control("util/excel");
+			$excel->SetDocumentTitle("relatorio-" . substr(sha1(date("dmYHis")),0,10));
+
+			$data = [];
+
+			$cabecalho = function($dt){
+				$mes = explode("/", $dt);
+				$mes = (int)$mes[1];
+				$nmes = $mes;
+				switch($mes){
+					case 1: $mes = "Janeiro"; break;
+					case 2: $mes = "Fevereiro"; break;
+					case 3: $mes = "Março"; break;
+					case 4: $mes = "Abril"; break;
+					case 5: $mes = "Maio"; break;
+					case 6: $mes = "Junho"; break;
+					case 7: $mes = "Julho"; break;
+					case 8: $mes = "Agosto"; break;
+					case 9: $mes = "Setembro"; break;
+					case 10: $mes = "Outubro"; break;
+					case 11: $mes = "Novembro"; break;
+					case 12: $mes = "Dezembro"; break;
+				}
+
+				return [
+					["{$_GET["titulo"]} {$mes}"],
+					["Data", "Descrição", "Valor", "Tipo", "Status"],
+					$mes
+				];
+			};
+
+			$ma = -1;
+
+			$boletos = $_POST["dados"];
+
+			$filter->set($req["data-inicio"]);
+
+			$boletos = ($filter->filter($req["data-final"], 0, $boletos));
+
+			$data2 = [];
+
+			$entrada_somada = 0;
+			$saida_somada = 0;
+
+			foreach($boletos as $boleto){
+				if(((int)$req["entrada"] == 1 && $boleto[4] !== "SAIDA") || ((int)$req["saida"] == 1 && $boleto[4] == "SAIDA")){
+					$k = strtotime($boleto[0]);
+
+					while(isset($data2[$k])){
+						$k++;
+					}
+					if($boleto[5] == "PAGO"){
+						if($boleto[4] !== "SAIDA"){
+							$entrada_somada += (float)str_replace(",", ".", str_replace(".", "", preg_replace("/[^0-9\.\,]/", "", $boleto[3])));
+						} else {
+							$saida_somada += (float)str_replace(",", ".", str_replace(".", "", preg_replace("/[^0-9\.\,]/", "", $boleto[3])));
+						}
+					}
+					$data2[$k] = $boleto;
+				}
 			}
+
+			ksort($data2);
+
+			$saida_somada = "R$ " . number_format($saida_somada, 2, ",", ".");
+			$entrada_somada = "R$ " . number_format($entrada_somada, 2, ",", ".");
+
+			$ln = 1;
+			$sep = 2;
+
+			foreach($data2 as $boleto){
+				$k = strtotime(array_shift($boleto));
+
+				// while(isset($data[$k])){
+				// 	$k++;
+				// }
+				//
+				// $data[$k] = [$ma];
+				//
+				// $ln++;
+
+				$m = $cabecalho($boleto[0]);
+
+				if($mb=(($map1=$m[2]) != ($map2=$ma))){
+
+					if($ln > 1){
+						for($ksep = 0; $ksep < $sep; $ksep++){
+							while(isset($data[$k])){
+								$k++;
+							}
+
+							$data[$k] = [];
+
+							$ln++;
+						}
+					}
+
+					$map = "{$map1}!={$map2}";
+
+					$ma = $m[2];
+
+					// while(isset($data[$k])){
+					// 	$k++;
+					// }
+					//
+					// $data[$k] = [$m[2],$ma,$mb?$map:"false"];
+					//
+					// $ln++;
+
+					while(isset($data[$k])){
+						$k++;
+					}
+
+					$data[$k] = $m[0];
+
+					$from = "A{$ln}"; // or any value
+					$to = "E{$ln}"; // or any value
+					$tom = "E{$ln}"; // or any value
+					$styleArray = array(
+						'font'  => array(
+							'bold'  => true,
+							'color' => array('rgb' => 'FFFFFF'),
+							'size'  => 26
+						),
+
+						'fill' => array(
+				            'type' => 'solid',
+				            'color' => array('rgb' => $_GET["cor"])
+				        ));
+
+					$excel->Instance()->getActiveSheet()->mergeCells("{$from}:{$tom}");
+					$excel->Instance()->getActiveSheet()->getStyle("{$from}:{$to}")->applyFromArray($styleArray);
+
+					$ln++;
+
+					while(isset($data[$k])){
+						$k++;
+					}
+
+					$data[$k] = $m[1];
+
+					$from = "A{$ln}"; // or any value
+					$to = "E{$ln}"; // or any value
+					$styleArray = array(
+						'font'  => array(
+							'bold'  => true,
+							'color' => array('rgb' => 'FFFFFF'),
+							'size'  => 12
+						),
+
+						'fill' => array(
+				            'type' => 'solid',
+				            'color' => array('rgb' => $_GET["cor"])
+				        )
+					);
+
+					$excel->Instance()->getActiveSheet()->getStyle("$from:$to")->applyFromArray($styleArray);
+
+					$ln++;
+				}
+
+				while(isset($data[$k])){
+					$k++;
+				}
+
+				$ln++;
+
+				$data[$k] = $boleto;
+			}
+			$fin = [];
+			if((int)$req["entrada"] == 1){
+				$fin[] = "Entrada total: {$entrada_somada}";
+			}
+
+			if((int)$req["saida"] == 1){
+				$fin[] = "|";
+				$fin[] = "Saída total: {$saida_somada}";
+			}
+
+			$styleArray = array(
+				'font'  => array(
+					'bold'  => true,
+					'color' => array('rgb' => 'FFFFFF'),
+					'size'  => 26
+				),
+
+				'fill' => array(
+					'type' => 'solid',
+					'color' => array('rgb' => "444444")
+				));
+
+			if(count($fin)){
+				$from = "A{$ln}"; // or any value
+				$to = "E{$ln}"; // or any value
+				$excel->Instance()->getActiveSheet()->mergeCells("{$from}:{$to}");
+				$excel->Instance()->getActiveSheet()->getStyle("{$from}:{$to}")->applyFromArray($styleArray);
+				$ln++;
+				$from = "A{$ln}"; // or any value
+				$to = "E{$ln}"; // or any value
+				$excel->Instance()->getActiveSheet()->mergeCells("{$from}:{$to}");
+				$excel->Instance()->getActiveSheet()->getStyle("{$from}:{$to}")->applyFromArray($styleArray);
+				$ln++;
+				$from = "A{$ln}"; // or any value
+				$to = "E{$ln}"; // or any value
+				$excel->Instance()->getActiveSheet()->mergeCells("{$from}:{$to}");
+				$excel->Instance()->getActiveSheet()->getStyle("{$from}:{$to}")->applyFromArray($styleArray);
+				$data[] = [""];
+				$data[] = [implode("          ", $fin)];
+				$data[] = [""];
+			}
+			$excel->Instance()->getActiveSheet()->getColumnDimension('A')->setWidth(28);
+			$excel->Instance()->getActiveSheet()->getColumnDimension('B')->setWidth(120);
+			$excel->Instance()->getActiveSheet()->getColumnDimension('C')->setWidth(28);
+			$excel->Instance()->getActiveSheet()->getColumnDimension('D')->setWidth(28);
+			$excel->Instance()->getActiveSheet()->getColumnDimension('E')->setWidth(28);
+			// $excel->Instance()->getActiveSheet()->getStyle('E')->getAlignment()->setWrapText(true);
+			// $excel->Instance()->getActiveSheet()->getColumnDimension('H')->setWidth(30);
+			// $excel->Instance()->getActiveSheet()->getColumnDimension('I')->setWidth(25);
+
+			// $this->dbg($data);
+
+			$excel->Instance()->getActiveSheet()->fromArray($data);
+
+			$lastrow = $excel->Instance()->getActiveSheet()->getHighestRow();
+
+			// $styleArray = array(
+			// 	'font'  => array(
+			// 		'bold'  => true,
+			// 		'color' => (int)$req["entrada"] == 1 ? array('rgb' => '168511') : array('rgb' => '851611'),
+			// 		'size'  => 14
+			// 	));
+			//
+			// $excel->Instance()->getActiveSheet()->getStyle("B{$lastrow}")->applyFromArray($styleArray);
+			//
+			// $styleArray = array(
+			// 	'font'  => array(
+			// 		'bold'  => true,
+			// 		'color' => array('rgb' => '851611'),
+			// 		'size'  => 14
+			// 	));
+			//
+			// $excel->Instance()->getActiveSheet()->getStyle("D{$lastrow}")->applyFromArray($styleArray);
+
+			$excel->Instance()->getActiveSheet()->getStyle('A1:I'.$lastrow)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+			$excel->Instance()->getActiveSheet()->getStyle('A1:I'.$lastrow)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+
+			exit($excel->Save("xls"));
 		}
 
 		function page_financeiro_apagar(){

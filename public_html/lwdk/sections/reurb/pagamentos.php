@@ -245,7 +245,7 @@
 				}
 
 				return [
-					["Dados relativos ao mês de {$mes}"],
+					["{$_GET["titulo"]} {$mes}"],
 					["Data", "Cliente", "Vendedor", "Endereço", "Produto", "Parcela", "Status", "Valor"],
 					$mes
 				];
@@ -333,7 +333,7 @@
 
 						'fill' => array(
 				            'type' => 'solid',
-				            'color' => array('rgb' => '225284')
+				            'color' => array('rgb' => $_GET["cor"])
 				        ));
 
 					$excel->Instance()->getActiveSheet()->mergeCells("{$from}:{$tom}");
@@ -358,7 +358,7 @@
 
 						'fill' => array(
 				            'type' => 'solid',
-				            'color' => array('rgb' => '228452')
+				            'color' => array('rgb' => $_GET["cor"])
 				        )
 					);
 

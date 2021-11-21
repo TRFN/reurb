@@ -43,7 +43,7 @@
             $tbody = "";
 
             $botao_apagar = (function($id,$keyword,$txtBtn){
-                return '<a href="javascript:;" onclick="Swal.fire({
+                return '<a href="javascript:;" data-skin="white" data-toggle="m-tooltip" data-placement="top" title="" data-original-title="Apagar" onclick="Swal.fire({
                                     title: ``,
                                     html: `Voc&ecirc; deseja mesmo apagar o(a) ' . $txtBtn . '?! <br>Essa a&ccedil;&atilde;o &eacute; irrevers&iacute;vel e tudo que estiver vinculado será apagado também.`,
                                     icon: `warning`,
@@ -83,13 +83,13 @@
                     if(!isset($_dado[$keyid])){
                         $_dado[$keyid] = "";
                     }
-                    $dado[] = '<a href="/'.$keyword.'/editar/' . $_dado[$keyid] . '/" ajax=on class="m-portlet__nav-link btn m-btn m-btn--hover-accent m-btn--icon m-btn--icon-only m-btn--pill" title="Editar"><i class="la la-edit"></i></a>' . $botao_apagar($_dado[$keyid],$keyword,$txtBtn);
+                    $dado[] = '<a href="/'.$keyword.'/editar/' . $_dado[$keyid] . '/" class="m-portlet__nav-link btn m-btn m-btn--hover-accent m-btn--icon m-btn--icon-only m-btn--pill" data-skin="white" data-toggle="m-tooltip" data-placement="top" title="" data-original-title="Editar"><i class="la la-edit"></i></a>' . $botao_apagar($_dado[$keyid],$keyword,$txtBtn);
                 }
 
-                $tbody .= "<tr><td><span style='display: inline-block;overflow-wrap: break-word;word-wrap: break-word;hyphens: auto;max-width: 400px; text-align: center;text-transform: capitalize;'>" . implode("</span></td><td><span style='display: inline-block;overflow-wrap: break-word;word-wrap: break-word;hyphens: auto;max-width: 400px;text-align: center;text-transform: capitalize;'>", $dado) . "</span></td></tr>";
+                $tbody .= "<tr><td><span data-id='{$_dado[$keyid]}' style='display: inline-block;overflow-wrap: break-word;word-wrap: break-word;hyphens: auto;max-width: 400px; text-align: center;text-transform: capitalize;'>" . implode("</span></td><td><span data-id='{$_dado[$keyid]}' style='display: inline-block;overflow-wrap: break-word;word-wrap: break-word;hyphens: auto;max-width: 400px;text-align: center;text-transform: capitalize;'>", $dado) . "</span></td></tr>";
             }
 
-            return $this->simple_loader($content, $layout, array_merge($vars,array(
+            return $this->simple_loader($content, $layout, array_merge(array(
                 "TITLE"=>$titulo,
                 "thead" => $thead,
                 "tbody" => $tbody,
@@ -97,7 +97,7 @@
                 "text-add" => "Adicionar " . $txtBtn,
                 "extrascript" => "",
 				"all-data" => json_encode($query)
-            )), array(
+            ), $vars), array(
             "extrabody" => strlen($keyword)>0?"botao_adicionar":"empty",
 			"extracontent" => strlen($extracontent)>0?"{$extracontent}":"empty"
 		));

@@ -56,7 +56,7 @@
 						$vendedores[$k]["valor"] = "R$ " . number_format($comissao=((float)((int)str_replace(",",".",str_replace(".","",str_replace("R$ ", "",$vendedores[$k]["valor-venda"]))) / 100) * (int)$vendedores[$k]["comissao"]), 2, ",", ".");
 						// $this->dbg($comissao);
 						$vendedores[$k]["comissao"] = "{$vendedores[$k]["comissao"]}%";
-						$vendedores[$k]["imovel-local"] = "<a target=_blank href='/imovel/editar/{$vendedores[$k]["imovel"]}/' target=_blank>{$vendedores[$k]["rua"]}, {$vendedores[$k]["numero"]} {$vendedores[$k]["complemento"]} -  {$vendedores[$k]["bairro"]}<br>{$vendedores[$k]["cidade"]} - {$vendedores[$k]["estado"]}</a>";
+						$vendedores[$k]["imovel-local"] = "<a target=_blank href='/imovel/editar/{$vendedores[$k]["imovel"]}/' target=_blank>{$vendedores[$k]["rua"]}, {$vendedores[$k]["numero"]} {$vendedores[$k]["complemento"]} {$vendedores[$k]["bairro"]}<br>{$vendedores[$k]["cidade"]} - {$vendedores[$k]["estado"]}</a>";
 						$vendedores[$k]["vendedor"] = "<a target=_blank href='/vendedor/editar/{$vendedores[$k]["vendedor-id"]}/' target=_blank>{$vendedores[$k]["vendedor"]}</a>";
 						$vendedores[$k]["acao"] = "<button data-id='{$this->url(2)}' data-imov='{$vendedores[$k]["imovel"]}' class='imprimir btn btn-dark m-btn py-4'><i class='fa-2x  la la-print'></i></button>";
 						$vendedores[$k]["valor"] = "{$vendedores[$k]["valor"]}&nbsp;({$vendedores[$k]["comissao"]})";
@@ -65,7 +65,7 @@
 					$keyword         = "cliente";
 					$btnTxt          = "Cliente";
 					$db              = $vendedores;
-					$titulos         = "Vendedor,Imovel,Valor Total,Imprimir";
+					$titulos         = "Vendedor,Imovel,Valor,Imprimir";
 					$dados           = "vendedor,imovel-local,valor-venda,acao";
 					$keyid           = "id";
 					$titulo          = "Contrato dos Clientes";
@@ -558,15 +558,15 @@
 					foreach($vendedores as $k => $vendedor){
 						$parc = count($vendedores[$k]["pendentes"]);
 						$vendedores[$k]["pendentes"] = "{$parc} parcela(s)";
-						$vendedores[$k]["acao"] = "<a class='btn m-btn btn-outline-dark' href='/recibo_cliente/exportar/{$vendedores[$k]["id"]}/'><i class='la la-list'></i>&nbsp;Acessar</a>";
+						$vendedores[$k]["acao"] = "<a class='btn m-btn btn-outline-dark' href='/recibo_cliente/exportar/{$vendedores[$k]["id"]}/'><i class='la la-file'></i>&nbsp;Gerar Recibo</a>";
 						$vendedores[$k]["outros"] = "<a class='btn m-btn btn-success m-2 my-4' href='/recibo_cliente/pagamentos/{$vendedores[$k]["id"]}/' data-skin='white' data-toggle='m-tooltip' data-placement='top' title='' data-original-title='Relatório de Pagamentos'><i style='font-size: 2rem;' class='la la-money px-0 py-2'></i></a><a class='btn m-btn btn-info m-2 my-4' href='/recibo_cliente/produtos/{$vendedores[$k]["id"]}/' data-skin='white' data-toggle='m-tooltip' data-placement='top' title='' data-original-title='Relatório de Produtos Adquiridos'><i style='font-size: 2rem;' class='la la-star px-0 py-2'></i></a>";
 						$vendedores[$k]["nome"] = "<a target=_blank href='/cliente/editar/{$vendedores[$k]["id"]}/' target=_blank>{$vendedores[$k]["nome"]}</a>";
 					}
 					$btnTxt          = "Cliente";
 					$keyword         = "cliente";
 					$db              = $vendedores;
-					$titulos         = "Nome,E-mail,parcelas pendentes,Recibo,Mais Opções&nbsp;<i class='  la-1x  la la-question-circle-o' data-skin='white' data-toggle='m-tooltip' data-placement='top' title='' data-original-title='Passe o mouse na opção/botão para saber seu título.'></i>";
-					$dados           = "nome,email,pendentes,acao,outros";
+					$titulos         = "Nome,E-mail,parcelas pendentes,Ações";
+					$dados           = "nome,email,pendentes,acao";
 					$keyid           = "id";
 					$titulo          = "Recibo dos Clientes";
 
@@ -655,7 +655,9 @@
 					$keyid           = "id";
 					$titulo          = "Gerir Clientes Cadastrados";
 
-					exit($this->_tablepage($content,$keyword,$titulos,$dados,$keyid,$titulo,$db,$btnTxt)->getCode());
+					exit($this->_tablepage($content,$keyword,$titulos,$dados,$keyid,$titulo,$db,$btnTxt,"not",!0,"tables","",["extrascript"=>"
+						LWDKExec(()=>setTimeout(()=>($('table tr').each(function(){\$(this).find('td:last > span').prepend('<a data-skin=\"white\" data-toggle=\"m-tooltip\" data-placement=\"top\" title=\"\" data-original-title=\"Gerar Recibo\" href=\"javascript:;\" onclick=\"window.open(`/recibo_cliente/exportar/\` + $(this).parent().data(`id`) + `/`)\" class=\"m-portlet__nav-link btn m-btn m-btn--hover-info m-btn--icon m-btn--icon-only m-btn--pill\"><i class=\"la la-file-text\"></i></a>')}),LWDKInitFunction.exec()),0));
+					"])->getCode());
 				break;
 			}
         }

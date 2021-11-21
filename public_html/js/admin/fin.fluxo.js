@@ -119,6 +119,8 @@ window.finupdt = ((callback=-1, args=-1)=>{
 		entrada = 0;
 		saida = 0;
 
+		window.dados_atuais = [];
+
 		grafico_entrada = [];
 		grafico_saida = [];
 		meses_txt = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
@@ -180,7 +182,7 @@ window.finupdt = ((callback=-1, args=-1)=>{
 
 						(typeof dado.pago == "undefined" && (dado.pago = "not"));
 
-						console.log(dado);
+						// console.log(dado);
 
 						if((typeof dado.pago != "undefined" && dado.pago == "pg")){
 							switch (dado.sect) {
@@ -240,6 +242,16 @@ window.finupdt = ((callback=-1, args=-1)=>{
 							'<div class="d-block text-center">' + actn + '</div>'
 						];
 						0&&console.log(dt);
+						window.dados_atuais.push([
+							ano+'-'+mes+'-'+dia,
+							dia+'/'+mes+'/'+ano,
+							typeof dado.nomeText !== "undefined" ? dado.nomeText:dado.nome,
+							dado.valor,
+							(dado.sect=="entrada"?dado.tipo:dado.sect).toUpperCase(),
+							typeof dado.pago == "undefined"
+								? ((dado.vars.date > dado.vars.now ? ((dado.sect=="entrada"?"a entrar":"a sair")):('ok')))
+								: (dado.pago == "not" ? ('PENDENTE'):('PAGO'))
+						]);
 						// 0&&console.log(ano_atual==ano,dt,table);
 						ano_atual == ano && table.row.add(dt).draw( true );
 						// row++;
@@ -329,6 +341,8 @@ window.applyBank = [];
 //
 // 	// 0&&console.log(applyCli);
 // }));
+
+window.dados_atuais = [];
 
 window.handleFile = (function(files){
     const reader = new FileReader();
@@ -494,223 +508,17 @@ LWDKExec(()=>($('.animated-btn > i').css({"transform":"scale(1.2)","transition":
 		$(this).find("> span").animate({"width":"0px"}, 300, ()=>($(this).animate({"border-radius": "100%"}, 100),$(this).find("> i").css({"transform":"scale(1.6)"})));
 	});
 }),1800)));
+window.config_excel = ({
+	cor: "6277C2",
+	titulo: encodeURIComponent("Transações relativas ao mês de".split("&ecirc;").join('ê'))
+});
+window.exportar_financeiro = function(){
+	let cfg = GetFormData("#exportar_financeiro");
 
-window.exportar_financeiro = function(fmt){
-	let cfg = GetFormData("#exportacao");
+	cfg.dados = dados_atuais;
 
-	cfg["fmt"] = fmt;
-
-	finupdt(function(data){
-		let dados = [];
-
-		for(let ano in data.valores){
-			let d_ano = data.valores[ano];
-			for(let mes in d_ano.itens){
-				let d_mes = d_ano.itens[mes];
-				for(let dia in d_mes.itens){
-					let d_dia = d_mes.itens[dia];
-					for(dado of d_dia.itens){
-						0&&console.log(dado);
-						dataDado = (new Date(dado.data)).getTime();
-						// 0&&console.log(dataDado);
-						dataInicio = (new Date(cfg["data-inicio"])).getTime();
-						dataFim = (new Date(cfg["data-final"])).getTime();
-
-						if(dataDado >= dataInicio && dataDado <= dataFim){
-							dados.push([dataDado, {
-								titulo: typeof dado.nomeText !== "undefined" ? dado.nomeText:dado.nome,
-								valor: dado.valor,
-								tipo: (dado.sect=="entrada"?dado.tipo:dado.sect),
-								status: ((dado.vars.date <= dado.vars.now && typeof dado.pago == "undefined") || (typeof dado.pago != "undefined" && dado.pago == "pg")) ? 'OK':(dado.sect=="entrada"?"a entrar":"a sair"),
-								data: dado.data
-							}]);
-						}
-					}
-				}
-			}
-		}
-
-		cfg["classificacao"] = cfg["classificacao"].split(";");
-		keys = [new apiDate(cfg["data-inicio"]), new apiDate(cfg["data-final"])];
-		comm = ["sum"+cfg["classificacao"][0],parseInt(cfg["classificacao"][1])];
-		keys[0]["sub"+cfg["classificacao"][0]](comm[1]);
-		prev = [];
-		// return 0&&console.log(keys[0].time(),keys[1].time());
-
-		while(keys[0].time() < keys[1].time()){
-			let prev_date = keys[0].time();
-			keys[0][comm[0]](comm[1]);
-			prev.push([prev_date, keys[0].time()]);
-		}
-
-		// 0&&console.log(dados);
-
-		let tratados = new Array();
-
-		for(let dado of dados){
-			let not = false;
-
-			not = not || (cfg["entrada"] == "0" && dado.sect == "entrada");
-			not = not || (cfg["saida"] == "0" && dado.sect == "saida");
-
-			if(!not){
-				for(let key = 0; key < prev.length; key++){
-					let dt = (new apiDate(dado[1]["data"])).time();
-					if(dt >= prev[key][0] && dt <= prev[key][1]){
-						if(typeof tratados[key] == "undefined"){
-							tratados[key] = new Object();
-						}
-
-						for(let c in dado[1]){
-							if(cfg[c] == "1" || c == "data"){
-								if(typeof tratados[key][c] == "undefined"){
-									tratados[key][c] = [dado[1][c]];
-								} else {
-									tratados[key][c].push(dado[1][c]);
-								}
-							}
-						}
-						break;
-					}
-				}
-			}
-		}
-		// 0&&console.log(tratados);
-		let meses_txt = [["Jan", "Janeiro"],["Fev", "Fevereiro"],["Mar", "Março"],["Abr", "Abril"],["Mai", "Maio"],["Jun", "Junho"],["Jul", "Julho"],["Ago", "Agosto"],["Set", "Setembro"],["Out", "Outubro"],["Nov", "Novembro"],["Dez", "Dezembro"]];
-
-		let dias_txt = [
-			["Dom","Domingo"],
-			["Seg","Segunda"],
-			["Ter","Terça-Feira"],
-			["Qua","Quarta-Feira"],
-			["Qui","Quinta-Feira"],
-			["Sex","Sexta-Feira"],
-			["Sáb","Sábado"]
-		];
-
-		for( let n = 0; n < tratados.length; n++ ){
-			if(typeof tratados[n] !== "object" || tratados[n] == null || tratados[n].length < 1){
-				tratados.slice(n, 1);
-			} else {
-				for(let dt of tratados[n].data){
-					dia = (new Date(dt)).getDay();
-					mes = (new Date(dt)).getMonth();
-					ano = (new Date(dt)).getFullYear();
-
-					if(typeof tratados[n].mes == 'undefined'){
-						tratados[n].mes = [JSON.stringify(meses_txt[mes])];
-					} else {
-						tratados[n].mes.push(JSON.stringify(meses_txt[mes]));
-					}
-					if(typeof tratados[n].ano == 'undefined'){
-						tratados[n].ano = [ano];
-					} else {
-						tratados[n].ano.push(ano);
-					}
-
-					if(typeof tratados[n].dia == 'undefined'){
-						tratados[n].dia = [dia];
-					} else {
-						tratados[n].dia.push(dia);
-					}
-				}
-				tratados[n].mes = Object.values(tratados[n].mes);
-
-				// tratados[n].mes = tratados[n].mes.filter(function(item, pos) {
-				//     return tratados[n].mes.indexOf(item) == pos;
-				// });
-			}
-		}
-
-		relatorio = [];
-
-		// 0&&console.log(dado);
-
-		for( let dado of tratados ){
-			if(typeof dado == "object" && dado != null){
-				dadoLinha = [];
-				datas = [dado.data[0], dado.data[dado.data.length-1]];
-				datas[0] = datas[0].split("-");
-				datas[0] = datas[0][2] + "/" +  datas[0][1] + "/" +  datas[0][0];
-
-				datas[1] = datas[1].split("-");
-				datas[1] = datas[1][2] + "/" +  datas[1][1] + "/" +  datas[1][0];
-				dado.dias = [];
-				for(de = 0; de < dado.data.length; de++){
-					dado.data[de] = dado.data[de].split("-");
-					dado.dias[de] = function(d){return d}(dado.data[de][2]);
-					dado.data[de] = dado.data[de][2] + "/" +  dado.data[de][1] + "/" + dado.data[de][0];
-				}
-
-				dadoLinha.push("Dados entre " + datas[0] + " e " + datas[1]);
-
-				if(typeof relatorio[relatorio.length-1] !== "undefined" && relatorio[relatorio.length-1][0].length > 3){
-					relatorio.push([""]);
-				}
-
-				relatorio.push(dadoLinha);
-				dadoLinha = [];
-
-				for(me = 0; me < dado.mes.length; me++){
-					dado.mes[me] = JSON.parse(dado.mes[me]);
-					dado.mes[me] = dado.mes[me][parseInt(cfg.abrev)==1?0:1];
-				}
-
-				dado2 = {
-					data: []
-				};
-
-				for(de = 0; de < dado.dia.length; de++){
-					dado.dia[de] = dias_txt[dado.dia[de]][parseInt(cfg.abrev)==1?0:1];
-					dado2.data[de] = dado.dia[de] + ", " + dado.dias[de].padStart(2, '0') + " de " + dado.mes[de] + " de " + dado.ano[de] + " (" + dado.data[de] + ")";
-				}
-
-				delete dado.dia;delete dado.dias;delete dado.mes;delete dado.ano;
-
-				for(iu in dado){
-					if(typeof dado2[iu] == "undefined"){
-						dado2[iu] = dado[iu];
-					}
-				}
-
-				for(title of Object.keys(dado2)){
-					dadoLinha.push(title.toUpperCase());
-				}
-
-				dadoLinha.push("TOTAL PERIODO");
-
-				relatorio.push(dadoLinha);
-				saida = [];
-
-				// 0&&console.log(dado);
-
-				for(d1 of Object.values(dado2)){
-					di = 0;
-					for(d2 of Object.values(d1)){
-						if(typeof saida[di] == "undefined"){
-							saida[di] = [];
-						}
-						saida[di].push(d2);
-						di++;
-					}
-				}
-
-				for(let dadoLinha of saida){
-					relatorio.push(dadoLinha);
-				}
-
-				dadoLinha = [];
-			}
-		}
-
-		// 0&&console.log(relatorio);
-
-		$.post("/financeiro_gerar_relatorio/", {config: cfg, data: relatorio}, function(link){
-			// window.top.location.href = link;
-			window.open("/" + link);
-			setTimeout(()=>$.post("/financeiro_apagar/", {arq: link}), 5000);
-		}).fail(function() {
-		    errorRequest(null, "<b>Os dados estabelecidos não podem gerar o relatório em excel. Tente usar dados diferentes.</b>");
-		  });
+	$.post(`/financeiro_gerar_relatorio/?titulo=${config_excel.titulo}&cor=${config_excel.cor}`, cfg, function(data){
+		location.href = "/" + data;
+		setTimeout(()=>$.post("/deletar_excel/", {file:data}),2000);
 	});
 }
