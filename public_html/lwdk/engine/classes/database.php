@@ -31,9 +31,9 @@
         }
 
         private function like(String $needle, String $haystack, String $options = ""){
-			$needle = implode("\/",explode("/",$needle));
-			$needle = preg_replace(array("/(á|à|ã|â|ä)/","/(Á|À|Ã|Â|Ä)/","/(é|è|ê|ë)/","/(É|È|Ê|Ë)/","/(í|ì|î|ï)/","/(Í|Ì|Î|Ï)/","/(ó|ò|õ|ô|ö)/","/(Ó|Ò|Õ|Ô|Ö)/","/(ú|ù|û|ü)/","/(Ú|Ù|Û|Ü)/","/(ñ)/","/(Ñ)/","/(ç)/","/(Ç)/"),explode(" ","a A e E i I o O u U n N c C"),$needle);
-			$haystack = preg_replace(array("/(á|à|ã|â|ä)/","/(Á|À|Ã|Â|Ä)/","/(é|è|ê|ë)/","/(É|È|Ê|Ë)/","/(í|ì|î|ï)/","/(Í|Ì|Î|Ï)/","/(ó|ò|õ|ô|ö)/","/(Ó|Ò|Õ|Ô|Ö)/","/(ú|ù|û|ü)/","/(Ú|Ù|Û|Ü)/","/(ñ)/","/(Ñ)/","/(ç)/","/(Ç)/"),explode(" ","a A e E i I o O u U n N c C"),$haystack);
+			$needle = @implode("\/",explode("/",$needle));
+			$needle = @preg_replace(array("/(á|à|ã|â|ä)/","/(Á|À|Ã|Â|Ä)/","/(é|è|ê|ë)/","/(É|È|Ê|Ë)/","/(í|ì|î|ï)/","/(Í|Ì|Î|Ï)/","/(ó|ò|õ|ô|ö)/","/(Ó|Ò|Õ|Ô|Ö)/","/(ú|ù|û|ü)/","/(Ú|Ù|Û|Ü)/","/(ñ)/","/(Ñ)/","/(ç)/","/(Ç)/"),explode(" ","a A e E i I o O u U n N c C"),$needle);
+			$haystack = @preg_replace(array("/(á|à|ã|â|ä)/","/(Á|À|Ã|Â|Ä)/","/(é|è|ê|ë)/","/(É|È|Ê|Ë)/","/(í|ì|î|ï)/","/(Í|Ì|Î|Ï)/","/(ó|ò|õ|ô|ö)/","/(Ó|Ò|Õ|Ô|Ö)/","/(ú|ù|û|ü)/","/(Ú|Ù|Û|Ü)/","/(ñ)/","/(Ñ)/","/(ç)/","/(Ç)/"),explode(" ","a A e E i I o O u U n N c C"),$haystack);
 			$match = @preg_match( "/^" . str_replace( '%', '(.*?)', trim($needle)) .  "$/{$options}", trim($haystack) ) || ($options=="i"&&!!preg_match( "/^" . str_replace( '%', '(.*?)', trim(strtolower($needle))) .  "$/{$options}", strtolower(trim($haystack))));
 			return!!($match);
 		}
@@ -74,8 +74,13 @@
         }
 
         public function set(String $file, $key, $value=null){
-            $content = $this->get($file);
-            $file = $this->path($file);
+            if($value != "rewrite"){
+				$content = $this->get($file);
+			} else {
+				$content = [];
+			}
+
+			$file = $this->path($file);
 
             if(is_array($key)){
                 foreach($key as $keyword=>$value){
@@ -389,5 +394,9 @@
 
             return $id;
         }
-    }
+
+		public function rewrite(String $db, $content = []){
+			$this->set($db, $content, "rewrite");
+		}
+	}
 ?>

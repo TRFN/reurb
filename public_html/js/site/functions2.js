@@ -125,7 +125,12 @@ const GetFormData = window.GetFormData = function GetFormData(context="html"){
 };
 
 const is_array = window.is_array = (function is_array(data=null, acceptempty=false){
-    return data && typeof data == "object" && typeof data.length !== "undefined" && (data.length > 0 || acceptempty) && data.constructor.name=="Array";
+    try{
+		e = data && typeof data == "object" && typeof data.length !== "undefined" && (data.length > 0 || acceptempty) && data.constructor.name=="Array";
+	}catch(e){
+		return false;
+	}
+	return e;
 });
 
 LWDKExec(()=>One(".cpfcnpj").keydown(function(){
@@ -222,10 +227,10 @@ const CalcShipping = window.CalcShipping = ((valor, cep, passive=false) => {
     consulta.destino = cep;                      // Cep Destino / sCepDestino
     /**************************************/
     consulta.valor_declarado = vld;              /* indicar 0 caso nao queira o valor declarado */
-    consulta.peso = 2;            /* valor dado em Kg incluindo a embalagem. 0.1, 0.3, 1, 2 ,3 , 4 */
-    consulta.altura = 40;            /* altura do produto em cm incluindo a embalagem */
+    consulta.peso = 0.15;            /* valor dado em Kg incluindo a embalagem. 0.1, 0.3, 1, 2 ,3 , 4 */
+    consulta.altura = 30;            /* altura do produto em cm incluindo a embalagem */
     consulta.largura = 30;          /* altura do produto em cm incluindo a embalagem */
-    consulta.comprimento = 60;  /* comprimento do produto incluindo embalagem em cm */
+    consulta.comprimento = 30;  /* comprimento do produto incluindo embalagem em cm */
 
     !passive&&$("#calculo_frete").show();
 
@@ -233,24 +238,36 @@ const CalcShipping = window.CalcShipping = ((valor, cep, passive=false) => {
 
     !passive&&$("#calculo_frete div.loading").show();
 
-    $.post(LWDKLocal + "?consultaCEP=1", consulta, (data) => {
-		// console.log(data);
+    $.post("?consultaCEP=1", consulta, (data) => {
+		console.log(data);
         if(data[2] !== false){
-            if(data[0] == data[1] && data[1] === false){
+			if(data[0] == data[1] && data[1] === false){
                 $(".prazo_sedex").closest(".e-sedex").attr("style", "display: none!important;");
 				$(".sedex-indisponivel").css("display", "flex");
                 $(".prazo_pac").html(data[2].prazo);
                 $(".preco_pac").html(pac=parseInt(data[2].valor[0]).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}));
 				$(".input_pac").val(pac);
             } else {
-	            $(".prazo_sedex").closest(".e-sedex").css("display", "flex");
-                $(".sedex-indisponivel").attr("style", "display: none!important;");
-                $(".prazo_pac").html(data[0].prazo);
-                $(".prazo_sedex").html(data[1].prazo);
-                $(".preco_pac").html(pac=parseFloat(data[0].valor[0]).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}));
-                $(".preco_sedex").html(sedex=parseFloat(data[1].valor[0]).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}));
-				$(".input_pac").val(pac);
-				$(".input_sedex").val(sedex);
+				if(data[0] == false){
+	                $(".prazo_pac").html(data[2].prazo);
+	                $(".preco_pac").html(pac=parseFloat(data[2].valor[0]).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}));
+					$(".input_pac").val(pac);
+	            } else {
+					$(".prazo_pac").html(data[0].prazo);
+	                $(".preco_pac").html(pac=parseFloat(data[0].valor[0]).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}));
+					$(".input_pac").val(pac);
+				}
+
+				if(data[1] == false){
+	                $(".prazo_sedex").closest(".e-sedex").attr("style", "display: none!important;");
+					$(".sedex-indisponivel").css("display", "flex");
+	            } else {
+		            $(".prazo_sedex").closest(".e-sedex").css("display", "flex");
+	                $(".sedex-indisponivel").attr("style", "display: none!important;");
+	                $(".prazo_sedex").html(data[1].prazo);
+	                $(".preco_sedex").html(sedex=parseFloat(data[1].valor[0]).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}));
+					$(".input_sedex").val(sedex);
+				}
             }
 
             !passive&&$("#calculo_frete .table-responsive").show();

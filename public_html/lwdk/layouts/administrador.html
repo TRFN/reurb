@@ -51,16 +51,114 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group m-form__group row">
+                                <div class="form-group m-form__group row permissoes" style="display: none">
+									<h3 class="px-0 mx-0 col-12 text-center mt-4">Permissões de acesso</h3>
                                     <div class="col-12 col-md-{size_l}">
                                         &nbsp;
                                     </div>
-                                    <label class="col-md-2 col-12 col-form-label">Nível Acesso</label>
-                                    <div class="col-12 col-md-{size_r}">
-                                        <select class="form-control" data-name="nivel_acesso"  data-value="{nivel_acesso}">
+	                                    <!-- <label class="col-md-0 col-12 col-form-label">&nbsp;</label> -->
+                                    <div class="col-12 col-md-8 row m-0">
+										<div class="col-12 text-right">
+											<!-- <button class="btn btn-outline-dark my-2" onclick='$("input.input-opt").prop("checked", false);'>Desmarcar Todos</button> -->
+										</div>
+                                        <!-- <select class="form-control" data-name="nivel_acesso"  data-value="{nivel_acesso}">
 											<option>Administrador</option>
 											<option>Financeiro</option>
-										</select>
+										</select> -->
+										<div class="col-12 bg-secondary col-xs-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 offset-0 offset-xs-0 offset-sm-1 offset-md-2 offset-lg-0 offset-xl-0 pl-4 pr-2 pt-4 pb-4 my-0 text-left">
+											<h5 class="px-0 mx-0">Conceder acesso administrativo</h5>
+											<label class="d-block">
+												<input data-bool=1 class="input-opt" type="checkbox" data-name="na_ctrl_total" data-value="{na_ctrl_total}" />&nbsp;
+												<!--<br>--><b style="font-size: 12px; cursor: pointer;">Controle Total</b>
+											</label>
+										</div>
+										<div class="col-12 bg-secondary col-xs-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 offset-0 offset-xs-0 offset-sm-1 offset-md-2 offset-lg-0 offset-xl-0 pl-4 pr-2 pt-4 pb-4 my-0 text-left">
+											<h5 class="px-0 mx-0 clear">Clientes</h5>
+											<label class="d-block">
+												<input data-bool=1 class="input-opt" type="checkbox" data-name="na_crud_cli" data-value="{na_crud_cli}" />&nbsp;
+												<!--<br>--><b style="font-size: 12px; cursor: pointer;">Gerir Clientes</b>
+											</label>
+										<!-- </div>
+										<div class="col-12 bg-secondary col-xs-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 offset-0 offset-xs-0 offset-sm-1 offset-md-2 offset-lg-0 offset-xl-0 pl-4 pr-2 pt-4 pb-4 my-0 text-left"> -->
+											<label class="d-block">
+												<input data-bool=1 class="input-opt" type="checkbox" data-name="na_pagamentos" data-value="{na_pagamentos}" />&nbsp;
+												<!--<br>--><b style="font-size: 12px; cursor: pointer;">Gerir Pagamentos</b>
+											</label>
+										<!-- </div>
+										<div class="col-12 bg-secondary col-xs-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 offset-0 offset-xs-0 offset-sm-1 offset-md-2 offset-lg-0 offset-xl-0 pl-4 pr-2 pt-4 pb-4 my-0 text-left"> -->
+											<label class="d-block">
+												<input data-bool=1 class="input-opt" type="checkbox" data-name="na_boletos" data-value="{na_boletos}" />&nbsp;
+												<!--<br>--><b style="font-size: 12px; cursor: pointer;">Gerir Boletos</b>
+											</label>
+										<!-- </div>
+										<div class="col-12 bg-secondary col-xs-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 offset-0 offset-xs-0 offset-sm-1 offset-md-2 offset-lg-0 offset-xl-0 pl-4 pr-2 pt-4 pb-4 my-0 text-left"> -->
+											<label class="d-block">
+												<input data-bool=1 class="input-opt" type="checkbox" data-name="na_inadimplentes" data-value="{na_inadimplentes}" />&nbsp;
+												<!--<br>--><b style="font-size: 12px; cursor: pointer;">Ver Inadimplentes</b>
+											</label>
+										<!-- </div>
+										<div class="col-12 bg-secondary col-xs-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 offset-0 offset-xs-0 offset-sm-1 offset-md-2 offset-lg-0 offset-xl-0 pl-4 pr-2 pt-4 pb-4 my-0 text-left"> -->
+											<label class="d-block">
+												<input data-bool=1 class="input-opt" type="checkbox" data-name="na_recibo_cli" data-value="{na_recibo_cli}" />&nbsp;
+												<!--<br>--><b style="font-size: 12px; cursor: pointer;">Gerar Recibos Clientes</b>
+											</label>
+										</div>
+										<div class="col-12 bg-secondary col-xs-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 offset-0 offset-xs-0 offset-sm-1 offset-md-2 offset-lg-0 offset-xl-0 pl-4 pr-2 pt-4 pb-4 my-0 text-left">
+											<h5 class="px-0 mx-0 clear">Documentos</h5>
+											<label class="d-block">
+												<input data-bool=1 class="input-opt" type="checkbox" data-name="na_contratos" data-value="{na_contratos}" />&nbsp;
+												<!--<br>--><b style="font-size: 12px; cursor: pointer;">Gerar Contratos</b>
+											</label>
+										<!-- </div>
+										<div class="col-12 bg-secondary col-xs-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 offset-0 offset-xs-0 offset-sm-1 offset-md-2 offset-lg-0 offset-xl-0 pl-4 pr-2 pt-4 pb-4 my-0 text-left"> -->
+											<label class="d-block">
+												<input data-bool=1 class="input-opt" type="checkbox" data-name="na_requerimentos" data-value="{na_requerimentos}" />&nbsp;
+												<!--<br>--><b style="font-size: 12px; cursor: pointer;">Gerar Requerimentos</b>
+											</label>
+										<!-- </div>
+										<div class="col-12 bg-secondary col-xs-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 offset-0 offset-xs-0 offset-sm-1 offset-md-2 offset-lg-0 offset-xl-0 pl-4 pr-2 pt-4 pb-4 my-0 text-left"> -->
+											<label class="d-block">
+												<input data-bool=1 class="input-opt" type="checkbox" data-name="na_procuracoes" data-value="{na_procuracoes}" />&nbsp;
+												<!--<br>--><b style="font-size: 12px; cursor: pointer;">Gerar Procurações</b>
+											</label>
+										</div>
+										<div class="col-12 bg-secondary col-xs-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 offset-0 offset-xs-0 offset-sm-1 offset-md-2 offset-lg-0 offset-xl-0 pl-4 pr-2 pt-4 pb-4 my-0 text-left">
+											<h5 class="px-0 mx-0 clear">Vendedores</h5>
+											<label class="d-block">
+												<input data-bool=1 class="input-opt" type="checkbox" data-name="na_crud_vend" data-value="{na_crud_vend}" />&nbsp;
+												<!--<br>--><b style="font-size: 12px; cursor: pointer;">Gerir Vendedores</b>
+											</label>
+										<!-- </div>
+										<div class="col-12 bg-secondary col-xs-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 offset-0 offset-xs-0 offset-sm-1 offset-md-2 offset-lg-0 offset-xl-0 pl-4 pr-2 pt-4 pb-4 my-0 text-left"> -->
+											<label class="d-block">
+												<input data-bool=1 class="input-opt" type="checkbox" data-name="na_recibo_ven" data-value="{na_recibo_ven}" />&nbsp;
+												<!--<br>--><b style="font-size: 12px; cursor: pointer;">Gerar Recibo dos Vendedores</b>
+											</label>
+										</div>
+										<div class="col-12 bg-secondary col-xs-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 offset-0 offset-xs-0 offset-sm-1 offset-md-2 offset-lg-0 offset-xl-0 pl-4 pr-2 pt-4 pb-4 my-0 text-left">
+											<h5 class="px-0 mx-0 clear">Imóveis</h5>
+											<label class="d-block">
+												<input data-bool=1 class="input-opt" type="checkbox" data-name="na_crud_imov" data-value="{na_crud_imov}" />&nbsp;
+												<!--<br>--><b style="font-size: 12px; cursor: pointer;">Gerir Imóveis</b>
+											</label>
+										</div>
+										<div class="col-12 bg-secondary col-xs-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 offset-0 offset-xs-0 offset-sm-1 offset-md-2 offset-lg-0 offset-xl-0 pl-4 pr-2 pt-4 pb-4 my-0 text-left">
+											<h5 class="px-0 mx-0 clear">Gestão Financeira</h5>
+											<label class="d-block">
+												<input data-bool=1 class="input-opt" type="checkbox" data-name="na_crud_fluxo" data-value="{na_crud_fluxo}" />&nbsp;
+												<!--<br>--><b style="font-size: 12px; cursor: pointer;">Gerir Fluxo de Caixa</b>
+											</label>
+										</div>
+										<div class="col-12 bg-secondary col-xs-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 offset-0 offset-xs-0 offset-sm-1 offset-md-2 offset-lg-0 offset-xl-0 pl-4 pr-2 pt-4 pb-4 my-0 text-left">
+											<h5 class="px-0 mx-0 clear">Gerir Usuários</h5>
+											<label class="d-block">
+												<input data-bool=1 class="input-opt" type="checkbox" data-name="na_crud_admins" data-value="{na_crud_admins}" />&nbsp;
+												<!--<br>--><b style="font-size: 12px; cursor: pointer;">Gerir Usuários do Sistema</b>
+											</label>
+										</div>
+										<div class="fixed col pl-4 pr-2 pt-4 pb-4 my-0 text-left bg-secondary">
+											&nbsp;
+										</div>
                                     </div>
                                 </div>
 

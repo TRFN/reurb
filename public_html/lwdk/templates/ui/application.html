@@ -270,7 +270,7 @@
 		<script src="//cdn.datatables.net/plug-ins/1.10.12/sorting/datetime-moment.js"></script>
 		<script src="https://cdn.datatables.net/rowreorder/1.2.8/js/dataTables.rowReorder.min.js"></script>
 		<script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
-	    <script src="https://code.jquery.com/ui/1.10.2/jquery-ui.min.js"></script>
+	    <script src="js/jquery-ui.min.js"></script>
         <script src="js/loja-virtual/functions.js" lwdk-vars="on"></script>
         <script src="vendors/popper.js/dist/umd/popper.js" type="text/javascript"></script>
         <script src="vendors/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
@@ -415,6 +415,106 @@
 		      R.push(this.slice(i, i + chunkSize));
 		    return R;
 		  }
+		});
+
+		LWDKExec(()=>{
+
+			window.auths = [
+				"{sessao-na_ctrl_total}" === "true",
+				"{sessao-na_crud_cli}" === "true",
+				"{sessao-na_pagamentos}" === "true",
+				"{sessao-na_boletos}" === "true",
+				"{sessao-na_inadimplentes}" === "true",
+				"{sessao-na_recibo_cli}" === "true",
+				"{sessao-na_contratos}" === "true",
+				"{sessao-na_requerimentos}" === "true",
+				"{sessao-na_procuracoes}" === "true",
+				"{sessao-na_crud_vend}" === "true",
+				"{sessao-na_recibo_ven}" === "true",
+				"{sessao-na_crud_imov}" === "true",
+				"{sessao-na_crud_fluxo}" === "true",
+				"{sessao-na_crud_admins}" === "true"
+			];
+
+			if(!auths[0]){
+				if(!auths[1]){
+					$(".crud_cli").remove();
+				} else {
+					$(".crud_cli").show().removeClass("d-none");
+				}
+				if(!auths[2]){
+					$(".pagamentos").remove();
+				} else {
+					$(".pagamentos").show().removeClass("d-none");
+				}
+				if(!auths[3]){
+					$(".boletos").remove();
+				} else {
+					$(".boletos").show().removeClass("d-none");
+				}
+				if(!auths[4]){
+					$(".inadimplentes").remove();
+				} else {
+					$(".inadimplentes").show().removeClass("d-none");
+				}
+				if(!auths[5]){
+					$(".recibo_cli").remove();
+				} else {
+					$(".recibo_cli").show().removeClass("d-none");
+				}
+				if(!auths[6]){
+					$(".contratos").remove();
+				} else {
+					$(".contratos").show().removeClass("d-none");
+				}
+				if(!auths[7]){
+					$(".requerimentos").remove();
+				} else {
+					$(".requerimentos").show().removeClass("d-none");
+				}
+				if(!auths[8]){
+					$(".procuracoes").remove();
+				} else {
+					$(".procuracoes").show().removeClass("d-none");
+				}
+				if(!auths[9]){
+					$(".crud_vend").remove();
+				} else {
+					$(".crud_vend").show().removeClass("d-none");
+				}
+				if(!auths[10]){
+					$(".recibo_ven").remove();
+				} else {
+					$(".recibo_ven").show().removeClass("d-none");
+				}
+				if(!auths[11]){
+					$(".crud_imov").remove();
+				} else {
+					$(".crud_imov").show().removeClass("d-none");
+				}
+				if(!auths[12]){
+					$(".crud_fluxo").remove();
+				}
+				if(!auths[13]){
+					$(".crud_admins").remove();
+					$(".meu_perfil").show().removeClass("d-none");
+				} else {
+					$(".crud_admins").show().removeClass("d-none");
+					$(".meu_perfil").remove();
+				}
+
+				$("ul.m-menu__subnav").each(function(){
+					if($(this).find("li").length == 0){
+						$(this).closest(".m-menu__item").remove();
+					} else {
+						$(this).closest(".m-menu__item").show().removeClass("d-none");
+					}
+				});
+			} else {
+				$(".m-menu__item").show().removeClass("d-none");
+				$(".meu_perfil").remove();
+			}
+
 		});
 		</script>
 

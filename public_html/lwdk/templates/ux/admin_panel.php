@@ -18,6 +18,7 @@
             $this->uiTemplateDefault("application");
             header("Content-Type: text/html;charset=utf-8");
             $this->empresa = "SISTEMA REURB";
+			$this->homepg = "/meus_dados/";
 
 			// $picpay = parent::control("connect/picpay");
 			//
@@ -58,7 +59,7 @@
                                             ` ' . ucfirst($txtBtn) . ' apagado(a) com sucesso!`,
                                             `success`
                                         ).then((result) => {
-                                            $.post(`{URLPrefix}/ajax_' . $keyword . '/`, {data:[`'. $id . '`, `erase`]}, function(){setTimeout(refresh,500);});
+                                            $.post(`{URLPrefix}/ajax_' . $keyword . '/`, {data:[`'. $id . '`, `erase`]}, function(data){location.reload()});
                                         });
                                     }
                                 });" class="m-portlet__nav-link btn m-btn m-btn--hover-danger m-btn--icon m-btn--icon-only m-btn--pill" title="Apagar"><i class="la la-trash"></i></a>';
@@ -107,9 +108,14 @@
 			return $test===false?$nivel:($nivel===$test);
 		}
 
+		function permissao($permissao){
+			$cl = "na_{$permissao}";
+			return (isset($this->admin_sessao()->{$cl}) && $this->admin_sessao()->{$cl} === "true")||(isset($this->admin_sessao()->na_ctrl_total) && $this->admin_sessao()->na_ctrl_total === "true");
+		}
+
         function _template_($content){
             $content->applyModels(array(
-                "menu_lateral" => $this->nivelacesso("Administrador") ? "menu":"menu-fin",
+                "menu_lateral" => "menu",
                 "header" => "header"
             ));
 
@@ -121,9 +127,48 @@
 				"hidden" => 'position: fixed; top: -100vw; left: -100vh; width: 0; height: 0; margin: 0; padding: 0; overflow: hidden; opacity: 0; display: none; visibility: hidden;'
             ));
 
-            foreach($this->admin_sessao() as $chave=>$valor){
-                $vars["sessao-{$chave}"] = $valor;
-            }
+			$acesso = [];
+
+			$niveis = [
+				"na_crud_cli" => ["cliente"],
+				"na_pagamentos" => ["pagamentos"],
+				"na_boletos" => ["boletos"],
+				"na_inadimplentes" => ["inadimplentes"],
+				"na_recibo_cli" => ["recibo_cliente"],
+				"na_contratos" => ["contrato_cliente"],
+				"na_requerimentos" => ["requerimento_cliente"],
+				"na_procuracoes" => ["procuracoes_cliente"],
+				"na_crud_vend" => ["vendedor"],
+				"na_recibo_ven" => ["relatorio_vendedor"],
+				"na_crud_imov" => ["imovel"],
+				"na_crud_fluxo" => ["financeiro_home"],
+				"na_crud_admins" => ["administradores"]
+			];
+
+			$travar = [];
+
+			foreach($niveis as $nivel){
+				$travar = array_merge($nivel, $travar);
+			}
+
+			// $this->dbg($niveis);
+
+            if($this->admin_sessao()){
+				foreach($this->admin_sessao() as $chave=>$valor){
+                	$vars["sessao-{$chave}"] = $valor;
+					if(isset($niveis[$chave]) && $valor == "true"){
+						$acesso = array_merge($acesso, $niveis[$chave]);
+					}
+            	}
+
+				// $this->dbg($acesso);
+
+				if(!in_array(parent::url(0), $acesso) && in_array(parent::url(0), $travar)){
+					header("Location: /{$acesso[0]}/");
+				} else {
+					$this->homepg = $acesso[0];
+				}
+			}
 
             $content->applyVars($vars);
 
@@ -134,7 +179,7 @@
 			if($this->admin_sessao() === false){
 				header("Location: /login/");
 			} else {
-				header("Location: /cliente/");
+				header("Location: /{$this->homepg}/");
 			}
         }
     }

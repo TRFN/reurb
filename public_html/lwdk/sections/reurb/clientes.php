@@ -99,13 +99,15 @@
 			$cli = $this->database()->query("clientes", "id = {$_POST["id"]}");
 			$imv = $this->database()->query("imoveis", "id = {$_POST["imv"]}");
 			// $this->dbg(clsTexto::valorPorExtenso($imv[0]["tamanho"], true, false, "metros"));
-			$imv[0]["valor-venda-ext"] = clsTexto::valorPorExtenso($imv[0]["valor-venda"], true, false, "metros");
+			$imv[0]["valor-venda-ext"] = clsTexto::valorPorExtenso($imv[0]["valor-venda-real"], true, false);
+			$imv[0]["valor-venda-desc-ext"] = clsTexto::valorPorExtenso($imv[0]["valor-venda-desconto"], true, false);
 			$parc_ext = clsTexto::valorPorExtenso(preg_replace("/[^0-9]/","",$imv[0]["forma-pgto"]), false, false);
+			$pre_parc = $imv[0]["valor-venda-desconto"] == $imv[0]["valor-venda"] ? "Excepcionalmente, em caráter de preço especial com desconto, o CONTRATANTE pagará ao CONTRATADO, por este contrato, o valor de {$imv[0]["valor-venda-desconto"]} ({$imv[0]["valor-venda-desc-ext"]}) da seguinte forma:&nbsp;":"";
 			$content->applyVars(array_merge($cli[0],$imv[0],array(
 				"dia" => "{$data_atual[1]}",
 				"mes" => "{$data_atual[2]}",
 				"ano" => "{$data_atual[3]}",
-				"texto-parcela" => $imv[0]["forma-pgto"] !== "vz1-1" ? "O CONTRATANTE se obriga a pagar todas as {$parc_ext} parcelas, mesmo após a conclusão dos serviços, por parte da CONTRATADA, ou seja, mesmo depois de emitida, pela prefeitura, a Certidão de Regularização Fundiária – CRF.":"O CONTRATANTE se obriga a pagar o valor proposto."
+				"texto-parcela" => $pre_parc . ($imv[0]["forma-pgto"] !== "vz1-1" ? "O CONTRATANTE se obriga a pagar todas as {$parc_ext} parcelas, mesmo após a conclusão dos serviços, por parte da CONTRATADA, ou seja, mesmo depois de emitida, pela prefeitura, a Certidão de Regularização Fundiária – CRF.":"O CONTRATANTE se obriga a pagar o valor proposto.")
 			)));
 			echo $content->getCode();
 		}
@@ -670,7 +672,7 @@
 				// $this->dbg($dat[0]);
 					foreach($dat[2] as $imovel){
 						$date = new DateTime($cliente["data"]);
-						$vzs = (int)preg_replace("/[^0-9]/", "", $imovel["forma-pgto"]);
+						$vzs = (int)preg_replace("/[^0-9]/", "", isset($imovel["forma-pgto"]) ? $imovel["forma-pgto"]:"0");
 						// $this->dbg($vzs);
 						for($vz = 0; $vz < $vzs; $vz++){
 							// $this->dbg($date->format("d/m/Y"));

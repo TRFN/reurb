@@ -15,9 +15,9 @@
 			<h3 class="col-12 text-center"><span style="font-size: 14px">Clique acima para alterar o ano</span></h3>
 		</div>
 
-		<div class="col-lg-6 col-12 text-right p-4 mb-4" style="position: absolute; right: calc(100% / 20)">
-			<!-- <a href="#" data-anim-delay="2200" onclick="$('html, body').animate({scrollTop: $('.meses').offset().top - 128}, 300); event.preventDefault(); return false;" class="animated-btn py-4 btn m-btn btn-dark mx-2 text-uppercase" style="font-weight: bold; opacity: 0;; font-size: 14px; background-color: #4B0082;border-color: #4B0082;"><i class="fa ml-2 fa-calendar-alt fa-1x d-inline-block"></i><span class="d-inline-block float-right ml-2 p-0" style="overflow: hidden;">&nbsp;visualizar meses</span></a> -->
-			<a  href="javascript:;" data-toggle="modal" data-target="#exportar_pagamentos"  type="button" class="animated-btn py-4 btn m-btn btn-success mx-2 text-uppercase" style="font-weight: bold; opacity: 0;; font-size: 14px;"><i class="fa ml-2 fa-file-excel fa-1x d-inline-block"></i><span class="d-inline-block float-right ml-2 p-0" style="overflow: hidden;">&nbsp;Fluxo de Caixa</span></a>
+		<div class="col-lg-6 col-md-8 text-end text-right row p-0 m-0 col-12 d-flex flex-row-reverse">
+			<button class="btn btn-info" style="height: 40px" onclick="$(this).parent().find('input')[0].click();"><i class="  la-1x  la la-file-text"></i>&nbsp;Importar Arquivo do Banco</button>
+			<input type="file" class="d-none" onchange="carregar_arquivo_banco(this)" />
 		</div>
 
 		<div class="col-lg-1 col-md-0">
@@ -68,9 +68,23 @@
 		<div class="col-lg-1 col-md-0">
 			&nbsp;
 		</div>
-
 		<div class="col-lg-10 col-md-12">
-			<h2>Parcelas Registradas</h2>
+			<nav><div class="nav justify-content-center nav-tabs nav-fill" role="tablist">
+				<a href="javascript:;" onclick="filtroboleto.aplicar(); $('.pagina_atual').text(this.innerText); return false;" class="px-4 mx-4 nav-item nav-link active" data-toggle="tab" role="tab" style="font-weight: 400; font-size: 20px; cursor: pointer;">Todos os Boletos</a>
+				<a href="javascript:;" onclick="filtroboleto.aplicar('{hoje}', -1, 'not'); $('.pagina_atual').text(this.innerText); return false;" class="px-4 mx-4 nav-item nav-link" data-toggle="tab" role="tab" style="font-weight: 400; font-size: 20px; cursor: pointer;">Boletos a Vencer</a>
+				<a href="javascript:;" onclick="filtroboleto.aplicar(-1, '{hoje}', 'not'); $('.pagina_atual').text(this.innerText); return false;" class="px-4 mx-4 nav-item nav-link" data-toggle="tab" role="tab" style="font-weight: 400; font-size: 20px; cursor: pointer;">Boletos Vencidos</a>
+				<a href="javascript:;" onclick="filtroboleto.aplicar(-1, -1, 'pg'); $('.pagina_atual').text(this.innerText); return false;" class="px-4 mx-4 nav-item nav-link" data-toggle="tab" role="tab" style="font-weight: 400; font-size: 20px; cursor: pointer;">Boletos Pagos</a>
+			</div></nav>
+		</div>
+		<div class="col-lg-1 col-md-0">
+			&nbsp;
+		</div>
+
+		<div class="col-lg-1 col-md-0">
+			&nbsp;
+		</div>
+		<div class="col-lg-10 col-md-12">
+			<h2 id=""></h2>
 			<div class="meses p-4">
 				<nav><div class="nav nav-tabs nav-fill" role="tablist">
                     {nav-meses}
@@ -85,6 +99,11 @@
 		<div class="col-lg-1 col-md-0">
 			&nbsp;
 		</div>
+
+		<div class="col-lg-6 col-12 text-right p-4 mb-4" style="position: absolute; right: 152px; margin-top: 122px!important;">
+			<!-- <a href="#" data-anim-delay="2200" onclick="$('html, body').animate({scrollTop: $('.meses').offset().top - 128}, 300); event.preventDefault(); return false;" class="animated-btn py-4 btn m-btn btn-dark mx-2 text-uppercase" style="font-weight: bold; opacity: 0;; font-size: 14px; background-color: #4B0082;border-color: #4B0082;"><i class="fa ml-2 fa-calendar-alt fa-1x d-inline-block"></i><span class="d-inline-block float-right ml-2 p-0" style="overflow: hidden;">&nbsp;visualizar meses</span></a> -->
+			<a  href="javascript:;" data-toggle="modal" data-target="#exportar_pagamentos"  type="button" class="animated-btn py-4 btn m-btn btn-success mx-2 text-uppercase" style="font-weight: bold; opacity: 0; font-size: 14px;"><i class="fa ml-2 fa-file-excel fa-1x d-inline-block"></i><span class="d-inline-block float-right ml-2 p-0" style="overflow: hidden;">&nbsp;Exportar&nbsp;<abbr class="pagina_atual">Todos os Boletos</abbr></span></a>
+		</div>
     </div>
 
 
@@ -95,7 +114,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Opções de Exportação</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Exportar&nbsp;<abbr class="pagina_atual">Todos os Dados</abbr></h5>
         <span type="button" style="cursor: pointer"  data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">x</span>
         </span>
@@ -103,13 +122,13 @@
       <div class="modal-body row" id="exportacao">
 		  <div class="col-lg col-12 px-4 my-2">
     			<label style="font-weight: bold;">Data de início</label><br>
-    			<input type="date" class="form-control main date" data-name="data-inicio" value="{data}" />
+    			<input type="date" class="form-control main date" data-name="data-inicio" value="{data1mesantes}" />
     		</div>
 			<div class="col-lg col-12 px-4 my-2">
 	  			<label style="font-weight: bold;">Data Final</label><br>
 	  			<input type="date" class="form-control ends date" data-name="data-final" value="{data}" />
 	  		</div>
-			<div class="col-12 px-4 my-2">
+			<!-- <div class="col-12 px-4 my-2">
 	  			<label style="font-weight: bold;">Classificar por</label><br>
 	  			<select data-name="classificacao" class="form-control" data-option="text">
 					<option value="Day;1">Dias</option>
@@ -120,18 +139,27 @@
 					<option value="Month;6">Semestres</option>
 					<option value="Year;1">Anos</option>
 				</select>
-	  		</div>
-			<div class="col-12 px-4 my-2 row">
-	  			<label class="col-12 mt-2" style="font-weight: bold;">Exportar os seguintes Dados: </label><br>
-				<label style="font-weight: 500" class="p-2 col-lg-4 text-justify col-12">
-					<input type="checkbox" data-name="entrada" data-option="bool" checked />
-					&nbsp;Entrada
+	  		</div> -->
+			<div class="col-12 px-4 my-2 ml-3 row">
+	  			<!-- <label class="col-12 mt-2" style="font-weight: bold; margin-left: -30px;">Desejo Exportar: </label>
+				<div class="p-2 col-lg-1 col-12">&nbsp;</div>
+				<label style="font-weight: 500; transform: scale(1.2)" class="p-2 col-lg-10 col-12">
+					<input type="checkbox" data-name="tudo" data-option="bool" />
+					&nbsp;Exportar Tudo
 				</label>
-				<label style="font-weight: 500" class="p-2 col-lg-4 text-justify col-12">
-					<input type="checkbox" data-name="saida" data-option="bool" checked />
-					&nbsp;Saída
+				<label style="font-weight: 500;" class="p-2 col-lg-4 text-justify col-12">
+					<input type="checkbox" data-name="a-vencer" data-option="bool" />
+					&nbsp;Boletos a Vencer
 				</label>
-				<label style="font-weight: 500" class="p-2 col-lg-4 text-justify col-12">
+				<label style="font-weight: 500;" class="p-2 col-lg-4 text-justify col-12">
+					<input type="checkbox" data-name="vencidos" data-option="bool" />
+					&nbsp;Boletos Vencidos
+				</label>
+				<label style="font-weight: 500;" class="p-2 col-lg-4 text-justify col-12">
+					<input type="checkbox" data-name="pagos" data-option="bool" />
+					&nbsp;Boletos Pagos
+				</label> -->
+				<!-- <label style="font-weight: 500" class="p-2 col-lg-4 text-justify col-12">
 					<input type="checkbox" data-name="titulo" data-option="bool" checked />
 					&nbsp;Titulo
 				</label>
@@ -151,11 +179,14 @@
 				<label style="font-weight: 500" class="p-2 col-lg-12 text-justify col-12">
 					<input type="checkbox" data-name="abrev" data-option="bool" />
 					&nbsp;Abreviar nome de Dias e Meses
-				</label>
+				</label> -->
 	  		</div>
       </div>
+
+
+
       <div class="modal-footer d-block bg-secondary">
-        <button onclick="exportar_financeiro('excel');" type="button" class="btn m-btn btn-success float-right d-inline-block mx-2" style="background-color: #292; border-color: #292;">
+        <button onclick="exportar_pagamentos();" type="button" class="btn m-btn btn-success float-right d-inline-block mx-2" style="background-color: #292; border-color: #292;">
 			<i class="fa mr-2 fa-file-excel fa-1x"></i>&nbsp;Baixar Excel
 		</button>
 		<!-- <button onclick="exportar_financeiro('pdf');" type="button" class="btn m-btn btn-dark float-right d-inline-block mx-2" style="background-color: #922; border-color: #922;">
@@ -170,3 +201,5 @@
 </div>
 
 <script lwdk-vars=on lwdk-addons src="js/fin.fluxo.js"></script>
+
+<script lwdk-addons>LWDKExec(()=>($('head').append("<style>.loadingMSG { width: 72px!important; }</sty" + "le>"), filtroboleto.aplicar()));</script>

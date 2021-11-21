@@ -316,3 +316,33 @@
     text-overflow: ellipsis!important;
     width: 90%!important;
 }
+
+label .input-opt {
+	position: absolute;
+	margin-left: -12px;
+	margin-top: 4px;
+}
+
+/* label.opt-sys .input-opt {
+	color: #fff;
+	background: #961121;
+	padding: 12px 16px;
+	border-radius: 0px;
+	transition: all 600ms ease;
+	border-radius: 0px;
+	box-shadow: 0px 0px 1px 1px #961121bb;
+}
+
+label.opt-sys .input-opt[disabled] {
+	color: #fff;
+	background: #444;
+	padding: 12px 16px;
+	transition: all 600ms ease;
+	box-shadow: 0px 0px 1px 1px #444b;
+
+}
+
+label.opt-sys .input-opt:checked:not([disabled]) {
+	background: #119621;
+	box-shadow: 0px 0px 1px 1px #119621bb;
+} */
