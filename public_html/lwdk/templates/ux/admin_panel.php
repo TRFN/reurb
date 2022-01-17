@@ -18,7 +18,7 @@
             $this->uiTemplateDefault("application");
             header("Content-Type: text/html;charset=utf-8");
             $this->empresa = "SISTEMA REURB";
-			$this->homepg = "/meus_dados/";
+			$this->homepg = "/administradores/";
 
 			// $picpay = parent::control("connect/picpay");
 			//
@@ -148,7 +148,7 @@
 			$travar = [];
 
 			foreach($niveis as $nivel){
-				$travar = array_merge($nivel, $travar);
+				$travar = array_merge($travar, $nivel);
 			}
 
 			// $this->dbg($niveis);

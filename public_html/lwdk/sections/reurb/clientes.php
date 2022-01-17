@@ -342,6 +342,9 @@
 						$vendedores[$k]["valor"] = "Parcela {$nparc}, no valor de {$vendedores[$k]["valor-parcela"]}";
 					}
 					$ven = $this->database()->query("vendedores", "id = {$this->url(2)}");
+					if(!count($ven)){
+						$ven = [["nome"=>""]];
+					}
 					$keyword         = "vendedor";
 					$btnTxt          = "Vendedor";
 					$db              = $vendedores;
@@ -645,7 +648,10 @@
 					echo $content->getCode();
 				break;
 				default:
-					$clientes = $this->get_clientes_status();
+					$clientes = $this->get_clientes();
+
+					// exit("OK");
+
 
 					$btnTxt          = "Cliente";
 					$keyword         = "cliente";
@@ -664,6 +670,7 @@
 
 		function get_clientes_status($why=-1){
 			$fin = $this->page_pagamentos_data(true);
+
 
 			$clientes = [];
 

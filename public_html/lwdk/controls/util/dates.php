@@ -1,7 +1,7 @@
 <?php
 /*
     VER: 1.0
-    LAST-UPDATE: 17/07/2021
+    LAST-UPDATE: 17/11/2021
 */
 
     function ctrl_util_dates($args){

@@ -1,1 +1,0 @@
-[Sun Nov 21 17:31:26.195375 2021] [php7:warn] [pid 9570] [client 127.0.0.1:34856] PHP Warning:  preg_replace(): No ending delimiter '/' found in /var/www/html/reurb/public_html/lwdk/sections/reurb/financeiro.php on line 724, referer: http://reurb/financeiro_home/

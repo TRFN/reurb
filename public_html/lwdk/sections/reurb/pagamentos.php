@@ -117,6 +117,7 @@
 		function page_pagamentos_data($fn=false){
 			$valores = [];
 
+
 			$clientes = [];
 
 			foreach($this->get_clientes() as $cliente){
@@ -153,7 +154,7 @@
 					}
 					$parc = 1;
 					$protect_while = 0;
-					while($exportacao[$index]["dados"]["valor"] > 0 && $protect_while < 1000){
+					while($exportacao[$index]["dados"]["valor"] > 0 && $protect_while < 50){
 						$protect_while++;
 						if(isset($imoveis[$imov]["valor-parcela-{$parc}"]) && !empty($imoveis[$imov]["valor-parcela-{$parc}"])){
 							$exportacao[$index]["dados"]["valor"] -= (float)str_replace(",", ".", str_replace(".", "", str_replace("R$ ", "", $imoveis[$imov]["valor-parcela-{$parc}"])));
